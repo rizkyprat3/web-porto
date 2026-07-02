@@ -127,4 +127,8 @@ export interface SiteConfig {
     github: string;
     linkedin: string;
   };
+  /** Path under /public for the About section portrait, e.g. "/images/profile.jpg" */
+  profileImage: string;
+  /** Short caption badge overlaid on the About photo, e.g. "Building in Medan, Indonesia" */
+  profileCaption: string;
 }

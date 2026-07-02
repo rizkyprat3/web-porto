@@ -16,4 +16,7 @@ export const siteConfig: SiteConfig = {
     github: "https://github.com/rizkyprat3",
     linkedin: "https://www.linkedin.com/in/rizkypratama",
   },
+  // Replace with a real photo of yourself at work (e.g. "/images/profile.jpg").
+  profileImage: "/images/profile-placeholder.svg",
+  profileCaption: "Informatics Student, Indonesia",
 };
