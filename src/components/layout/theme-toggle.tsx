@@ -1,14 +1,17 @@
 "use client";
 
 /**
- * Light/dark toggle. Renders a stable-size placeholder until mounted so
- * server and client markup match (theme isn't known until localStorage
- * is read on the client).
+ * Theme toggle between the site's two worlds:
+ * - dark  = futuristic neon
+ * - light = 8-bit retro
+ * Shows the world you'd switch TO (gamepad → retro, moon → neon).
+ * Renders a stable-size placeholder until mounted so server and client
+ * markup match (theme isn't known until localStorage is read).
  */
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { AnimatePresence, motion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
+import { Gamepad2, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -22,11 +25,13 @@ export function ThemeToggle({ className }: { className?: string }) {
   }
 
   const isDark = resolvedTheme === "dark";
+  const label = isDark ? "Switch to 8-bit mode" : "Switch to neon mode";
 
   return (
     <button
       type="button"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={label}
+      title={label}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
         "relative flex size-9 items-center justify-center overflow-hidden rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
@@ -35,14 +40,14 @@ export function ThemeToggle({ className }: { className?: string }) {
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
-          key={isDark ? "moon" : "sun"}
+          key={isDark ? "gamepad" : "moon"}
           initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
           animate={{ opacity: 1, rotate: 0, scale: 1 }}
           exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          {isDark ? <Moon className="size-4.5" /> : <Sun className="size-4.5" />}
+          {isDark ? <Gamepad2 className="size-4.5" /> : <Moon className="size-4.5" />}
         </motion.span>
       </AnimatePresence>
     </button>

@@ -29,11 +29,12 @@ const HEADLINE = ["Crafting", "intelligent,", "playable,"];
 const HEADLINE_ACCENT = ["beautiful", "software."];
 
 const TYPING_PHRASES = [
-  "Game Developer",
-  "AI & Forecasting Enthusiast",
+  "Game Developer 🎮",
+  "AI & Forecasting Enthusiast 📈",
   "Data Analyst",
   "Web Developer",
-  "Researcher",
+  "Researcher 🔬",
+  "Pixel Art Enjoyer",
 ];
 
 export function Hero() {
@@ -47,7 +48,15 @@ export function Hero() {
             variants={headlineWord}
             className="mb-5 font-mono text-sm tracking-widest text-neon-cyan uppercase"
           >
-            {siteConfig.name} — {siteConfig.role}
+            <motion.span
+              aria-hidden
+              className="mr-2 inline-block"
+              animate={{ rotate: [0, 18, -8, 18, 0] }}
+              transition={{ duration: 1.4, delay: 1.2, ease: "easeInOut" }}
+            >
+              👋
+            </motion.span>
+            Hi, I&apos;m {siteConfig.name} — {siteConfig.role}
           </motion.p>
 
           <h1 className="max-w-4xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">

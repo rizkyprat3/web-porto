@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Outfit } from "next/font/google";
+import { Geist, Geist_Mono, Outfit, Pixelify_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
@@ -19,11 +19,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/** Distinct display font for headings — geometric and a little more playful than the body font. */
+/**
+ * Two display fonts, one per theme world:
+ * - Outfit drives headings in dark mode (sleek neon world)
+ * - Pixelify Sans drives headings in light mode (8-bit retro world)
+ * The active one is selected in CSS via the --font-heading variable.
+ */
 const outfit = Outfit({
-  variable: "--font-heading",
+  variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
+});
+
+const pixelify = Pixelify_Sans({
+  variable: "--font-pixel",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -70,7 +81,7 @@ export default function RootLayout({
     // differs from the server-rendered markup.
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} themed-scrollbar antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${pixelify.variable} themed-scrollbar antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <LoadingScreen />
