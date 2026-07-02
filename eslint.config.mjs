@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // Static assets — self-contained vanilla-JS games are not app code
+      "public/**",
     ],
   },
 ];
