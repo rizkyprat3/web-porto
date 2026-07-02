@@ -1170,7 +1170,7 @@ $('btnResume').onclick = togglePause;
 $('btnSave').onclick = () => { saveGame(false); };
 $('btnNewGame').onclick = () => {
   if (confirm('Start a brand new adventure? Your save will be erased.')) {
-    localStorage.removeItem(SAVE_KEY);
+    try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* storage may be unavailable */ }
     location.reload();
   }
 };

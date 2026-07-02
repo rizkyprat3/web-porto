@@ -39,6 +39,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* Neon accent palette */
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-violet: var(--neon-violet);
+  --color-neon-pink: var(--neon-pink);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,83 +52,156 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
+/*
+ * Dark-first design: the site ships dark by default (`.dark` on <html>),
+ * so :root mirrors the dark palette. Deep space-navy base + neon accents.
+ */
+:root,
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.13 0.02 270);
+  --foreground: oklch(0.97 0.005 270);
+  --card: oklch(0.17 0.025 270);
+  --card-foreground: oklch(0.97 0.005 270);
+  --popover: oklch(0.16 0.025 270);
+  --popover-foreground: oklch(0.97 0.005 270);
+  --primary: oklch(0.82 0.14 200);
+  --primary-foreground: oklch(0.15 0.02 270);
+  --secondary: oklch(0.22 0.03 275);
+  --secondary-foreground: oklch(0.97 0.005 270);
+  --muted: oklch(0.21 0.02 270);
+  --muted-foreground: oklch(0.68 0.02 270);
+  --accent: oklch(0.24 0.05 290);
+  --accent-foreground: oklch(0.97 0.005 270);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.82 0.14 200 / 60%);
+  --chart-1: oklch(0.82 0.14 200);
+  --chart-2: oklch(0.65 0.2 290);
+  --chart-3: oklch(0.72 0.19 350);
+  --chart-4: oklch(0.8 0.16 150);
+  --chart-5: oklch(0.85 0.15 90);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.16 0.025 270);
+  --sidebar-foreground: oklch(0.97 0.005 270);
+  --sidebar-primary: oklch(0.82 0.14 200);
+  --sidebar-primary-foreground: oklch(0.15 0.02 270);
+  --sidebar-accent: oklch(0.22 0.03 275);
+  --sidebar-accent-foreground: oklch(0.97 0.005 270);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.82 0.14 200 / 60%);
+  /* Neon accents */
+  --neon-cyan: oklch(0.85 0.14 200);
+  --neon-violet: oklch(0.65 0.22 295);
+  --neon-pink: oklch(0.72 0.2 350);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    background: oklch(0.65 0.22 295 / 40%);
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism surface — kept to a single moderate blur per element */
+  .glass {
+    background: oklch(1 0 0 / 4%);
+    border: 1px solid oklch(1 0 0 / 10%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Gradient headline text */
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      var(--neon-cyan),
+      var(--neon-violet) 55%,
+      var(--neon-pink)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Neon glow border for arcade cards (static shadow — never animated) */
+  .neon-border {
+    border: 1px solid oklch(0.85 0.14 200 / 35%);
+    box-shadow:
+      0 0 12px oklch(0.85 0.14 200 / 12%),
+      inset 0 0 12px oklch(0.85 0.14 200 / 6%);
+  }
+
+  /* Thin scrollbar that matches the theme */
+  .themed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.3 0.03 275) transparent;
+  }
+}
+
+/*
+ * Ambient gradient blobs (hero background).
+ * Animated with transform only — GPU-composited, cheap.
+ */
+@keyframes blob-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, -8%, 0) scale(1.15);
+  }
+}
+@keyframes blob-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-7%, 6%, 0) scale(0.95);
+  }
+}
+.animate-blob-a {
+  animation: blob-drift-a 18s ease-in-out infinite;
+  will-change: transform;
+}
+.animate-blob-b {
+  animation: blob-drift-b 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Blinking caret for the typing subtitle */
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+}
+.animate-caret {
+  animation: caret-blink 1s step-end infinite;
+}
+
+/* Respect users who prefer reduced motion — kill all CSS animation */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
