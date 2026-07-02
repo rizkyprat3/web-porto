@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open World Adventure</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Game canvas (world rendering) -->
+<canvas id="game"></canvas>
+<div id="flash"></div>
+
+<!-- ======================= HUD ======================= -->
+<div id="hud" class="hidden">
+
+  <!-- Player stats -->
+  <div id="stats" class="panel">
+    <div class="statrow">
+      <span class="statlabel">❤️</span>
+      <div class="bar hp"><div id="hpfill"></div></div>
+    </div>
+    <div class="statrow">
+      <span class="statlabel">⚡</span>
+      <div class="bar st"><div id="stfill"></div></div>
+    </div>
+    <div id="coins">🪙 <span id="coinN">0</span></div>
+  </div>
+
+  <!-- Minimap + clock -->
+  <div id="mapwrap" class="panel">
+    <canvas id="minimap" width="164" height="123"></canvas>
+    <div id="clock">☀️ Day 1 — 08:00</div>
+  </div>
+
+  <!-- Quest tracker -->
+  <div id="tracker" class="panel">
+    <h3>📜 Quests</h3>
+    <div id="trackerList"><em>No active quests</em></div>
+  </div>
+
+  <!-- Interaction hint -->
+  <div id="hint" class="hidden"><span class="kbd">E</span> <span id="hintText"></span></div>
+
+  <!-- Zone banner -->
+  <div id="zoneBanner"></div>
+
+  <!-- Toast notifications -->
+  <div id="toasts"></div>
+</div>
+
+<!-- ======================= Dialogue box ======================= -->
+<div id="dialog" class="hidden">
+  <div id="portraitWrap"><canvas id="portrait" width="132" height="132"></canvas></div>
+  <div id="dBody">
+    <div id="dHead">
+      <span id="dName"></span>
+      <span id="dRole"></span>
+      <span id="dHearts"></span>
+    </div>
+    <div id="dText"></div>
+    <div id="dChoices"></div>
+  </div>
+</div>
+
+<!-- ======================= Inventory ======================= -->
+<div id="invPanel" class="panel hidden">
+  <h3>🎒 Inventory <span class="kbd">I</span></h3>
+  <div id="invGrid"></div>
+  <p class="tip">Click a potion to drink it (+HP / +Stamina).</p>
+</div>
+
+<!-- ======================= Shop ======================= -->
+<div id="shopPanel" class="panel hidden">
+  <h3>🛒 Seraphina's Boutique</h3>
+  <div id="shopRows"></div>
+  <button id="shopClose" class="btn">Close</button>
+</div>
+
+<!-- ======================= Pause menu ======================= -->
+<div id="pauseMenu" class="overlay hidden">
+  <div class="menuCard">
+    <h1>⏸ Paused</h1>
+    <button id="btnResume" class="btn big">▶ Resume</button>
+    <button id="btnSave" class="btn big">💾 Save Game</button>
+    <button id="btnNewGame" class="btn big danger">🔄 New Game</button>
+    <div class="controls">
+      <h3>Controls</h3>
+      <p><span class="kbd">W A S D</span> / <span class="kbd">↑ ← ↓ →</span> Move</p>
+      <p><span class="kbd">Shift</span> Sprint &nbsp; <span class="kbd">E</span> Interact</p>
+      <p><span class="kbd">I</span> Inventory &nbsp; <span class="kbd">Esc</span> Pause</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= Title screen ======================= -->
+<div id="titleScreen" class="overlay">
+  <div class="menuCard title">
+    <h1 class="gameTitle">🌸 Open World Adventure</h1>
+    <p class="subtitle">An anime-inspired open world full of friends, quests &amp; treasure</p>
+    <button id="btnContinue" class="btn big hidden">▶ Continue</button>
+    <button id="btnNew" class="btn big">✨ New Adventure</button>
+    <p class="tip">WASD to move · Shift to sprint · E to interact · I inventory · Esc pause</p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
