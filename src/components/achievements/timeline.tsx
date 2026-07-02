@@ -29,7 +29,7 @@ const TYPE_META: Record<
   academic: {
     label: "Academic",
     icon: GraduationCap,
-    badge: "border-emerald-400/40 text-emerald-300",
+    badge: "border-emerald-500/40 text-emerald-600 dark:border-emerald-400/40 dark:text-emerald-300",
   },
 };
 

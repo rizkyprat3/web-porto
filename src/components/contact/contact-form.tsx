@@ -62,7 +62,7 @@ export function ContactForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="glass flex flex-col items-center gap-3 rounded-2xl p-10 text-center"
       >
-        <CheckCircle2 className="size-10 text-emerald-400" />
+        <CheckCircle2 className="size-10 text-emerald-600 dark:text-emerald-400" />
         <h3 className="text-lg font-semibold">Message sent!</h3>
         <p className="text-sm text-muted-foreground">
           Thanks for reaching out — I&apos;ll get back to you soon.

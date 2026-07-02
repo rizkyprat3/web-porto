@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "@/styles/globals.css";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ScrollProgress } from "@/components/layout/scroll-progress";
@@ -16,6 +17,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/** Distinct display font for headings — geometric and a little more playful than the body font. */
+const outfit = Outfit({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -57,17 +65,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Dark mode by default — the whole design system is dark-first.
-    <html lang="en" className="dark">
+    // suppressHydrationWarning: next-themes sets the resolved theme class
+    // on <html> before hydration via an injected script, which legitimately
+    // differs from the server-rendered markup.
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} themed-scrollbar antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} themed-scrollbar antialiased`}
       >
-        <LoadingScreen />
-        <ScrollProgress />
-        <CustomCursor />
-        <Navbar />
-        <main className="min-h-svh">{children}</main>
-        <Footer />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <LoadingScreen />
+          <ScrollProgress />
+          <CustomCursor />
+          <Navbar />
+          <main className="min-h-svh">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

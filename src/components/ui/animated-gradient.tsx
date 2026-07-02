@@ -40,15 +40,15 @@ export function AnimatedGradient({ parallax = false, className }: AnimatedGradie
       className={cn("pointer-events-auto absolute inset-0 overflow-hidden", className)}
     >
       <motion.div style={{ x: sx, y: sy }} className="absolute inset-0">
-        <div className="animate-blob-a absolute -top-32 left-1/4 size-[34rem] rounded-full bg-neon-violet/25 blur-[100px]" />
-        <div className="animate-blob-b absolute top-1/3 -right-24 size-[30rem] rounded-full bg-neon-cyan/20 blur-[100px]" />
+        <div className="animate-blob-a absolute -top-32 left-1/4 size-[34rem] rounded-full bg-neon-violet/20 opacity-70 blur-[100px] dark:opacity-100" />
+        <div className="animate-blob-b absolute top-1/3 -right-24 size-[30rem] rounded-full bg-neon-cyan/15 opacity-70 blur-[100px] dark:opacity-100" />
       </motion.div>
       {/* Subtle grid overlay for depth */}
       <div
         className="absolute inset-0 opacity-[0.35]"
         style={{
           backgroundImage:
-            "linear-gradient(oklch(1 0 0 / 3%) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / 3%) 1px, transparent 1px)",
+            "linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)",
           backgroundSize: "56px 56px",
           maskImage: "radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent)",
         }}

@@ -11,6 +11,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ProjectCard } from "@/components/projects/project-card";
+import { categoryColor } from "@/lib/category-color";
 import { cn } from "@/lib/utils";
 import { PROJECT_CATEGORIES, type Project, type ProjectCategory } from "@/types";
 
@@ -39,21 +40,27 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
       {/* Controls */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
-          {(["All", ...PROJECT_CATEGORIES] as Filter[]).map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setFilter(cat)}
-              className={cn(
-                "rounded-xl border px-3.5 py-1.5 text-sm transition-colors",
-                filter === cat
-                  ? "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan"
-                  : "border-border text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {cat}
-            </button>
-          ))}
+          {(["All", ...PROJECT_CATEGORIES] as Filter[]).map((cat) => {
+            const accent = cat === "All" ? null : categoryColor[cat];
+            const active = filter === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setFilter(cat)}
+                className={cn(
+                  "rounded-xl border px-3.5 py-1.5 text-sm transition-colors",
+                  active
+                    ? accent
+                      ? cn(accent.border, accent.bg, accent.text)
+                      : "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan"
+                    : "border-border text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
         <div className="relative w-full sm:w-64">
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />

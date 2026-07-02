@@ -29,9 +29,13 @@ export function Section({
         {(eyebrow || title) && (
           <Reveal className="mb-12 max-w-2xl">
             {eyebrow && (
-              <p className="mb-3 font-mono text-sm tracking-widest text-neon-cyan uppercase">
+              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-accent/50 px-3 py-1 font-mono text-xs tracking-widest text-neon-cyan uppercase">
+                <span className="relative flex size-1.5">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-neon-cyan opacity-75" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-neon-cyan" />
+                </span>
                 {eyebrow}
-              </p>
+              </span>
             )}
             {title && (
               <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">

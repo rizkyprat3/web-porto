@@ -9,10 +9,21 @@ import { motion } from "framer-motion";
 import { ArrowRight, Gamepad2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
+import { Magnetic } from "@/components/ui/magnetic";
+import { Counter } from "@/components/ui/counter";
 import { cn } from "@/lib/utils";
 import { TypingText } from "@/components/ui/typing-text";
 import { headlineWord, staggerContainer } from "@/lib/animations";
 import { siteConfig } from "@/data/site";
+import { projects } from "@/data/projects";
+import { games } from "@/data/games";
+import { achievements } from "@/data/achievements";
+
+const STATS = [
+  { label: "Projects Shipped", value: projects.length },
+  { label: "Playable Games", value: games.length },
+  { label: "Milestones", value: achievements.length },
+];
 
 const HEADLINE = ["Crafting", "intelligent,", "playable,"];
 const HEADLINE_ACCENT = ["beautiful", "software."];
@@ -68,23 +79,43 @@ export function Hero() {
           </motion.p>
 
           <motion.div variants={headlineWord} className="mt-10 flex flex-wrap gap-3">
-            <Link
-              href="/projects"
-              className={cn(buttonVariants({ size: "lg" }), "group h-11 rounded-xl px-5")}
-            >
-              Explore Projects
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href="/arcade"
-              className={cn(
-                buttonVariants({ size: "lg", variant: "outline" }),
-                "h-11 rounded-xl px-5",
-              )}
-            >
-              <Gamepad2 className="size-4" />
-              Play My Games
-            </Link>
+            <Magnetic>
+              <Link
+                href="/projects"
+                className={cn(buttonVariants({ size: "lg" }), "group h-11 rounded-xl px-5")}
+              >
+                Explore Projects
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link
+                href="/arcade"
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "h-11 rounded-xl px-5",
+                )}
+              >
+                <Gamepad2 className="size-4" />
+                Play My Games
+              </Link>
+            </Magnetic>
+          </motion.div>
+
+          <motion.div
+            variants={headlineWord}
+            className="mt-14 flex flex-wrap gap-x-10 gap-y-4 border-t border-border/60 pt-8"
+          >
+            {STATS.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-gradient font-heading text-3xl font-semibold">
+                  <Counter value={stat.value} />+
+                </p>
+                <p className="mt-1 text-xs tracking-wide text-muted-foreground uppercase">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
       </div>
