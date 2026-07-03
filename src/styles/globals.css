@@ -251,6 +251,28 @@
   will-change: transform;
 }
 
+/* Pixel clouds drifting across the sky (8-bit light theme) */
+@keyframes cloud-drift {
+  from {
+    transform: translate3d(-20vw, 0, 0);
+  }
+  to {
+    transform: translate3d(115vw, 0, 0);
+  }
+}
+.animate-cloud-a {
+  animation: cloud-drift 75s linear infinite;
+  will-change: transform;
+}
+.animate-cloud-b {
+  animation: cloud-drift 110s linear -30s infinite;
+  will-change: transform;
+}
+.animate-cloud-c {
+  animation: cloud-drift 90s linear -60s infinite;
+  will-change: transform;
+}
+
 /* Blinking caret for the typing subtitle */
 @keyframes caret-blink {
   0%,
@@ -308,6 +330,48 @@ html:not(.dark) h1,
 html:not(.dark) h2,
 html:not(.dark) h3 {
   letter-spacing: 0;
+}
+
+/* Tilemap checkerboard across the whole page background */
+html:not(.dark) body {
+  background-image: conic-gradient(
+    oklch(0.3 0.04 265 / 3.5%) 90deg,
+    transparent 90deg 180deg,
+    oklch(0.3 0.04 265 / 3.5%) 180deg 270deg,
+    transparent 270deg
+  );
+  background-size: 48px 48px;
+}
+
+/* Faint CRT scanlines over everything (static layer — zero animation cost) */
+html:not(.dark) body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    oklch(0.3 0.04 265 / 2.5%) 3px 4px
+  );
+}
+
+/* Full commitment: every circle becomes a square in the pixel world
+   (cursor ring, timeline nodes, eyebrow dot, play overlay, scroll hint) */
+html:not(.dark) .rounded-full {
+  border-radius: 0;
+}
+
+/* Pixel typography for accents & UI labels — body text stays Geist for
+   readability, but everything "chrome" speaks 8-bit */
+html:not(.dark) .font-mono,
+html:not(.dark) [class*="group/button"],
+html:not(.dark) [data-slot="badge"],
+html:not(.dark) header nav a,
+html:not(.dark) kbd {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.02em;
 }
 
 /* Respect users who prefer reduced motion — kill all CSS animation */
