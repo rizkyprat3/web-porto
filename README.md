@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rizki Pratama — Portfolio
 
-## Getting Started
+Personal portfolio with a playable HTML game arcade, built to feel like two game worlds:
 
-First, run the development server:
+- 🌙 **Dark mode** — futuristic neon: glassmorphism, cyan/violet glow, cinematic reveals
+- 🎮 **Light mode** — 8-bit retro world: pixel font, sprite shadows, drifting pixel clouds, platformer ground
+
+**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · shadcn/ui · Zod
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Pages
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | Description |
+|---|---|
+| `/` | Hero, About (photo + skills + journey), featured projects |
+| `/projects` | Filterable & searchable project grid |
+| `/projects/[slug]` | Full case study per project |
+| `/arcade` | Playable HTML games in sandboxed iframes |
+| `/arcade/[gameId]` | Embedded game + fullscreen/restart + controls guide |
+| `/achievements` | Animated timeline |
+| `/contact` | Validated, rate-limited contact form |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Editing content
 
-## Learn More
+All content lives in typed data files — no component changes needed:
 
-To learn more about Next.js, take a look at the following resources:
+- `src/data/site.ts` — identity, links, profile photo
+- `src/data/projects.ts` — projects (auto-generates detail pages)
+- `src/data/games.ts` — arcade games (drop a folder in `public/games/` + one entry)
+- `src/data/achievements.ts`, `src/data/skills.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**📘 Full guide (Bahasa Indonesia): [PANDUAN.md](./PANDUAN.md)**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Security
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+CSP + security headers, sandboxed game iframes (`allow-scripts`, opaque origin), Zod server validation, honeypot + per-IP rate limiting, secrets in server-side env vars only.

@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      // NOTE: /public assets are served by Next with ETag-based caching
+      // (Cache-Control cannot be overridden here); CDNs like Vercel cache
+      // them at the edge automatically.
     ];
   },
 };

@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * Contact form with client-side Zod validation, honeypot anti-spam field,
- * and graceful success/error states. Server re-validates everything.
+ * Contact form with lightweight client-side validation (no Zod in the
+ * browser bundle), honeypot anti-spam field, and graceful success/error
+ * states. The server re-validates everything with the full Zod schema.
  */
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -11,13 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { contactSchema } from "@/lib/validation";
+import { validateContact, type ContactErrors } from "@/lib/contact-rules";
 
-type FieldErrors = Partial<Record<"name" | "email" | "message", string>>;
 type Status = "idle" | "sending" | "success" | "error";
 
 export function ContactForm() {
-  const [errors, setErrors] = useState<FieldErrors>({});
+  const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [serverMessage, setServerMessage] = useState("");
 
@@ -26,13 +26,13 @@ export function ContactForm() {
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
 
-    const parsed = contactSchema.safeParse(data);
-    if (!parsed.success) {
-      const fieldErrors: FieldErrors = {};
-      for (const issue of parsed.error.issues) {
-        const key = issue.path[0] as keyof FieldErrors;
-        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
-      }
+    const values = {
+      name: data.name ?? "",
+      email: data.email ?? "",
+      message: data.message ?? "",
+    };
+    const fieldErrors = validateContact(values);
+    if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       return;
     }
@@ -43,7 +43,7 @@ export function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({ ...values, website: data.website ?? "" }),
       });
       const body = (await res.json()) as { message?: string };
       if (!res.ok) throw new Error(body.message ?? "Something went wrong");

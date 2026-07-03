@@ -36,7 +36,6 @@ export function About() {
               fill
               sizes="(max-width: 1024px) 100vw, 400px"
               className="object-cover"
-              priority
             />
             <div className="absolute inset-x-4 bottom-4">
               <span className="glass inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs">
