@@ -42,7 +42,7 @@ Kamu terdampar di benua yang dijaga sebuah ordo mercusuar. Sesuatu bernama **Kel
 ### Cara bertahan hidup — jam pertama
 
 1. **Kapalmu karam di pantai selatan.** Seseorang berdiri di antara puing — itu **Rua**. Sapa dia (`E`) dan **ikuti dia** ke Serambi, desa berbenteng satu-satunya tempat aman. Jangan tertinggal jauh; dia menunggumu.
-2. **Pukul pohon** (klik ke arahnya) untuk kayu — pohon kecil bisa tanpa alat, lalu buat **Kapak Batu** dan **Beliung Batu** (`C`).
+2. **Pukul pohon dan batu dengan tangan kosong** (klik ke arahnya) — lambat tapi bisa. Kumpulkan 5 kayu + 3 batu, lalu buat **Kapak Batu** dan **Beliung Batu** (`C`). Bingung cari barang? `Esc` → **Panduan**.
 3. **Buat Obor sebelum malam.** Malam itu gelap, dingin, dan serigala berburu dalam kawanan. Malam pertama tanpa obor = pelajaran yang menyakitkan.
 4. **Semak beri** (`E`) untuk makanan. Masak di dekat api (`C` → Makanan Matang) supaya pulih jauh lebih banyak.
 5. **Tidur di Menara Bara saat malam** (`E`) untuk melewati malam dengan aman — atau bertahan di luar kalau berani.

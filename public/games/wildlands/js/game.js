@@ -19,6 +19,10 @@ function bindInput() {
     else if (k === 'shift') Input.sprint = true;
     else if (k === ' ') { Input.dodge = true; e.preventDefault(); }
     else if (k === 'e') interact();
+    else if (k === 't') {
+      if (G.story.jalurApi) uiTeleport();
+      else toast(G.stats && G.stats.helps >= 5 ? 'Rua ingin bicara denganmu — temui dia dulu.' : 'Api-api itu terasa jauh. Bantulah warga desa — mungkin ada yang tahu caranya.');
+    }
     else if (k === 'q') eatFood();
     else if (k === 'f') placeCampfire();
     else if (k === 'c') uiToggleCraft();
@@ -356,6 +360,20 @@ window.addEventListener('load', function () {
   el('btn-mode-back').onclick = function () { hide('screen-mode'); show('screen-menu'); };
   el('memory-close').onclick = function () { hide('screen-memory'); G.paused = false; };
   el('btn-resume').onclick = function () { uiCloseAll(); };
+  el('btn-controls').onclick = function () {
+    var w = el('ctl-wrap');
+    var open = w.style.display === 'block';
+    w.style.display = open ? 'none' : 'block';
+    el('btn-controls').textContent = open ? 'Kontrol ▾' : 'Kontrol ▴';
+    if (!open) { el('about-wrap').style.display = 'none'; el('btn-about').textContent = 'Panduan — di mana mencari barang ▾'; }
+  };
+  el('btn-about').onclick = function () {
+    var w = el('about-wrap');
+    var open = w.style.display === 'block';
+    w.style.display = open ? 'none' : 'block';
+    el('btn-about').textContent = open ? 'Panduan — di mana mencari barang ▾' : 'Panduan — di mana mencari barang ▴';
+    if (!open) { el('ctl-wrap').style.display = 'none'; el('btn-controls').textContent = 'Kontrol ▾'; }
+  };
   el('btn-quit').onclick = function () { saveGame(); location.reload(); };
   el('btn-mute').onclick = function () { AudioSys.muted = !AudioSys.muted; el('btn-mute').textContent = AudioSys.muted ? '🔇' : '🔊'; };
   uiMenu();

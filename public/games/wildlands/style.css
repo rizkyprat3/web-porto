@@ -87,6 +87,14 @@ button.dim { opacity: 0.5; }
 .warn { color: #c05a4a; font-size: 12px; max-width: 420px; margin-bottom: 8px; }
 #padam-confirm { margin-bottom: 14px; }
 
+/* daftar kontrol di layar jeda */
+.ctl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; margin-bottom: 10px; }
+.ctl-grid div { display: flex; align-items: baseline; gap: 8px; font-size: 11px; line-height: 1.5;
+  border-bottom: 1px solid rgba(232,221,192,0.1); padding: 3px 0; }
+.ctl-grid b { color: #ffd7a0; min-width: 92px; max-width: 92px; font-size: 10.5px; }
+.ctl-grid span { color: #b8c2d8; }
+@media (max-width: 560px) { .ctl-grid { grid-template-columns: 1fr; } }
+
 /* karakter */
 .mode-sub { font-size: 13px; letter-spacing: 4px; color: #8a8fa5; margin: 6px 0 10px; }
 #char-cards { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 900px; margin-bottom: 18px; }

@@ -158,13 +158,20 @@ function harvestFacing(p, heavy) {
   var ty = Math.floor((p.y + Math.sin(p.face) * 40) / T);
   var o = G.world.objectAt(tx, ty);
   if (!o || o.hp >= 999) return;
-  if (o.tool && !p.has[o.tool] && !(o.tool === 'axe' && p.has.axe2) && !(o.tool === 'pick' && p.has.pick2)) {
-    toast('Butuh ' + (o.tool.indexOf('pick') === 0 ? 'beliung' : 'kapak') + ' untuk ' + o.label + '.');
+  // bijih bintang: satu-satunya gerbang keras — butuh beliung besi
+  if (o.tool === 'pick2' && !p.has.pick2) {
+    toast('Bijih bintang terlalu keras. Butuh Beliung Besi.');
     return;
   }
   var key = tx + ',' + ty;
   G.objHp = G.objHp || {};
+  // tangan kosong tetap bisa — lambat. Alat batu normal, alat besi 3×.
   var power = 1;
+  var hasTool = !o.tool || p.has[o.tool] || (o.tool === 'axe' && p.has.axe2) || (o.tool === 'pick' && p.has.pick2);
+  if (!hasTool) {
+    power = 1 / 3;
+    if (!G._bareHint) { G._bareHint = true; toast('Tangan kosong bisa, tapi lambat — buat ' + (o.tool === 'pick' ? 'beliung' : 'kapak') + ' di panel C.'); }
+  }
   if (o.tool === 'axe' && p.has.axe2) power = 3;
   if (o.tool === 'pick' && p.has.pick2) power = 3;
   if (heavy) power *= 2;

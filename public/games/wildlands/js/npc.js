@@ -297,6 +297,13 @@ function startTalk(n) {
 
 function gainTrust(n) {
   G.rel[n.nama] = (G.rel[n.nama] || 0) + 1 + (charDef().trustBonus || 0);
+  // setiap bantuan dihitung — 5 kali membantu warga membuka pelajaran Rua
+  G.stats.helps = (G.stats.helps || 0) + 1;
+  if (G.stats.helps >= 5 && !G.story.jalurApi && !G.story.jalurApiReady) {
+    G.story.jalurApiReady = true;
+    toast('Rua mendengar kau rajin membantu warga. Dia ingin bicara denganmu.');
+    addJournal('Rua ingin menunjukkan sesuatu — temui dia. (Rahasia kartografer, katanya.)');
+  }
   if (G.rel[n.nama] === CFG.REL.Rekan || (charDef().trustBonus && G.rel[n.nama] === CFG.REL.Rekan + 1)) {
     toast(npcDisplayName(n) + ' kini menganggapmu Rekan.');
     G.relDay[n.nama + '_rekan'] = G.time.day;

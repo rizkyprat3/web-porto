@@ -27,7 +27,7 @@ Perahu (setelah dibuat): masuk saja ke perairan dangkal — otomatis berlayar, k
 
 Damage dasar: tangan kosong 12 · Gada 18 · Pedang Besi 22 · Pedang Bara 34.
 
-**Menebang / menambang:** serang (klik) ke arah pohon/batu/bijih. Butuh alat yang sesuai — kapak untuk pohon, beliung untuk batu, **beliung besi** untuk bijih bintang. Serangan berat memanen 2× lebih cepat; alat besi 3× lebih cepat.
+**Menebang / menambang:** serang (klik) ke arah pohon/batu/bijih. **Tangan kosong bisa, tapi 3× lebih lambat** — alat batu normal, alat besi 3× lebih cepat, serangan berat 2× lagi. Satu-satunya gerbang keras: **bijih bintang wajib Beliung Besi**. Panduan lokasi semua sumber daya ada di menu `Esc` → "Panduan".
 
 ## 3. `E` — Interaksi (satu tombol, konteks menentukan)
 
@@ -92,6 +92,8 @@ Regen HP otomatis saat lapar > 60 **dan** suhu > 40. Lapar 0 = HP terkuras. Suhu
 ## 8. Roda Teleport ("api memanggil api")
 
 Terbuka lewat `E` di Titik Api, Menara, pelita menyala, atau suar milikmu.
+
+**`T` — Jalur Api (teleport instan).** Setelah kamu **membantu warga 5 kali** (kerja bareng atau jawaban obrolan yang benar, dihitung gabungan), Rua memanggilmu dan mengajarkan rahasia kartografer: tekan `T` **dari mana saja** untuk membuka roda teleport tanpa harus berdiri di api. Aturan lain tetap: hanya siang, biaya 30 lapar, dan tujuannya hanya titik api yang sudah kau kenal (Titik Api Serambi, pelita yang sudah kau nyalakan, suar buatanmu). Membuka achievement *Rahasia Kartografer*.
 
 | Perintah | Aksi |
 |---|---|

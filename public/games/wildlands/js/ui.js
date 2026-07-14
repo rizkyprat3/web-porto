@@ -138,6 +138,16 @@ function uiNpcMenu(n) {
     return;
   }
 
+  // Rua mengajarkan Jalur Api: teleport instan dengan T
+  if (n.nama === 'Rua' && G.story.jalurApiReady && !G.story.jalurApi) {
+    G.story.jalurApi = true;
+    unlockAch('jalur_api');
+    uiDialog('Rua', '"Kau sudah banyak membantu kami — jadi kuajari satu rahasia kartografer. Api yang sudah mengenalmu bisa dipanggil dari mana saja. Tekan [T], di mana pun kau berdiri, dan pilih apinya. Tetap hanya siang, dan perutmu yang membayar ongkosnya. Jangan sia-siakan."');
+    toast('JALUR API terbuka — tekan T untuk teleport instan ke titik api yang sudah kau kenal.');
+    autoSave();
+    return;
+  }
+
   el('dlg-nama').textContent = npcDisplayName(n);
   el('dlg-teks').textContent = npcLine(n);
   var html = '';

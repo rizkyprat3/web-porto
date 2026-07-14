@@ -16,6 +16,7 @@ var ACHS = [
   { id: 'hulan',        icon: '🌫', nama: 'Namanya Hulan',        desc: 'Kembalikan nama yang dilupakan.' },
   { id: 'kaya',         icon: '🪙', nama: 'Saudagar Terdampar',   desc: 'Kumpulkan 100 emas.' },
   { id: 'penjelajah',   icon: '🗺', nama: 'Kaki yang Gatal',      desc: 'Singkap 10% peta benua.' },
+  { id: 'jalur_api',    icon: '✨', nama: 'Rahasia Kartografer',  desc: 'Pelajari Jalur Api dari Rua — teleport instan dengan T.' },
   { id: 'roboh',        icon: '🪦', nama: 'Jalan Pulang',         desc: 'Ambil kembali isi Nisan Bara-mu.' },
   { id: 'tamat',        icon: '⭐', nama: 'Harga Sebuah Ingatan', desc: 'Selesaikan cerita.' },
 ];
