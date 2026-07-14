@@ -14,7 +14,7 @@ export const siteConfig: SiteConfig = {
   email: "rizkyprat03@gmail.com",
   links: {
     github: "https://github.com/rizkyprat3",
-    linkedin: "https://www.linkedin.com/in/rizkypratama",
+    discord: "https://discord.com/users/1056746829926109206",
   },
   // Replace with a real photo of yourself at work (e.g. "/images/profile.jpg").
   profileImage: "/images/profile-placeholder.svg",

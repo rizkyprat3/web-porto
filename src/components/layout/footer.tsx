@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { GitHubIcon, LinkedInIcon } from "@/components/ui/icons";
+import { GitHubIcon, DiscordIcon } from "@/components/ui/icons";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/data/site";
 
@@ -28,13 +28,13 @@ export function Footer() {
               <GitHubIcon />
             </a>
             <a
-              href={siteConfig.links.linkedin}
+              href={siteConfig.links.discord}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn"
+              aria-label="Discord"
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:text-neon-cyan"
             >
-              <LinkedInIcon />
+              <DiscordIcon />
             </a>
             <a
               href={`mailto:${siteConfig.email}`}

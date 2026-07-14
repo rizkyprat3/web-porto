@@ -127,7 +127,7 @@ export interface SiteConfig {
   email: string;
   links: {
     github: string;
-    linkedin: string;
+    discord: string;
   };
   /** Path under /public for the About section portrait, e.g. "/images/profile.jpg" */
   profileImage: string;

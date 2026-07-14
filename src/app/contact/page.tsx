@@ -3,7 +3,7 @@ import { Mail } from "lucide-react";
 import { Section } from "@/components/ui/section";
 import { Reveal } from "@/components/ui/reveal";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
-import { GitHubIcon, LinkedInIcon } from "@/components/ui/icons";
+import { GitHubIcon, DiscordIcon } from "@/components/ui/icons";
 import { ContactForm } from "@/components/contact/contact-form";
 import { siteConfig } from "@/data/site";
 
@@ -26,10 +26,10 @@ const CHANNELS = [
     icon: GitHubIcon,
   },
   {
-    label: "LinkedIn",
+    label: "Discord",
     value: "Rizki Pratama",
-    href: siteConfig.links.linkedin,
-    icon: LinkedInIcon,
+    href: siteConfig.links.discord,
+    icon: DiscordIcon,
   },
 ] as const;
 
