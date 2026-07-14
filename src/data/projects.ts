@@ -7,6 +7,43 @@ import type { Project } from "@/types";
  */
 export const projects: Project[] = [
   {
+    slug: "wildlands",
+    title: "WILDLANDS — Open-World Survival Game",
+    description:
+      "An open-world survival game running entirely in the browser: a procedural 4096×4096-tile continent, story-driven NPCs, and permadeath — built with vanilla JavaScript and Canvas, zero assets, zero dependencies.",
+    category: "Game Development",
+    techStack: ["JavaScript", "Canvas 2D", "WebAudio", "Procedural Generation"],
+    status: "completed",
+    thumbnail: "/images/projects/wildlands-thumb.svg",
+    date: "2026-07-14",
+    featured: true,
+    longDescription:
+      "WILDLANDS drops the player on a procedurally generated continent guarded by a lighthouse order whose memories are being eaten by an entity called the Kelam. The player survives day/night cycles, crafts through three tool tiers, builds relationships with nine NPCs through contextual dialogue and shared-work minigames (including marriage), and relights five unique lanterns to unlock one of three endings. The entire world — 16.8 million tiles — is a pure function of a seed: only the player's changes are saved, keeping a full save under 100 KB. Every visual is drawn procedurally on Canvas and every sound is synthesized with WebAudio oscillators; the project ships not a single image or audio file.",
+    problemStatement:
+      "Open-world games are assumed to need engines, asset pipelines, and gigabytes of content. This project tests how much world, story, and system depth can fit in plain JavaScript that loads instantly and runs from a static folder.",
+    developmentProcess: [
+      "Wrote a full design spec (PROMPT.md) and narrative doc (STORY.md) before any code",
+      "Built seeded value-noise terrain with radial falloff so every seed forms a true continent",
+      "Anchored the village and five quest lanterns deterministically, validated by coarse flood-fill so every generated world is guaranteed completable",
+      "Implemented fixed-timestep loop, chunk-cached terrain, y-sorted rendering, and layered lighting",
+      "Layered on survival stats, three-tier crafting, arc-based combat with dodge i-frames, and six enemy AI types",
+      "Added nine NPCs with priority-based contextual dialogue banks, relationship tiers, and death modes from normal to permadeath",
+      "Verified with Node world-gen tests (12 seeds, deterministic) and a headless-Chrome smoke test of the full gameplay loop",
+    ],
+    challenges: [
+      "Making an 'infinite-feeling' world that a story with five fixed locations can still rely on",
+      "Keeping 60 FPS while the visible world is recomputed from noise every frame",
+      "Persisting saves inside the portfolio's sandboxed arcade iframe",
+    ],
+    solutions: [
+      "World as a pure function of seed + coordinates; only player changes are stored, with time-based resource regrowth",
+      "Offscreen-canvas chunk cache, strict viewport culling, and a fixed 60 Hz update decoupled from rendering",
+      "A safe storage adapter that falls back to in-memory when localStorage is blocked, plus a scoped sandbox policy for first-party games",
+    ],
+    screenshots: ["/images/games/wildlands-cover.svg"],
+    links: { demo: "/arcade/wildlands", github: "https://github.com/rizkyprat3/web-porto" },
+  },
+  {
     slug: "game-fable-5",
     title: "Fable 5 — Browser Arcade Game",
     description:
