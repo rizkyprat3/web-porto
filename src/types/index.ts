@@ -58,7 +58,9 @@ export type GameGenre =
   | "Arcade"
   | "Platformer"
   | "Strategy"
-  | "Casual";
+  | "Casual"
+  | "Survival"
+  | "Open World";
 
 export interface Game {
   /** URL segment and folder name under /public/games */

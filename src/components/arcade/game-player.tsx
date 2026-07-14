@@ -4,9 +4,10 @@
  * Sandboxed game player.
  *
  * Security model:
- * - `sandbox="allow-scripts allow-pointer-lock"` WITHOUT `allow-same-origin`
- *   gives the game an opaque origin: its scripts run, but it cannot read
- *   cookies/localStorage of the site, access the parent DOM, or navigate us.
+ * - `sandbox="allow-scripts allow-same-origin allow-pointer-lock"`: games are
+ *   first-party static files under /public/games (never third-party embeds),
+ *   and `allow-same-origin` lets them persist saves via localStorage. The
+ *   sandbox still blocks navigation, popups, forms, and downloads.
  * - Fullscreen is requested on the wrapper from the parent page, so the
  *   iframe itself needs no extra permissions.
  * - CSP `frame-src 'self'` guarantees only our own /games/* can be embedded.
@@ -52,7 +53,7 @@ export function GamePlayer({ game }: { game: Game }) {
           key={session}
           src={game.entryPath}
           title={game.title}
-          sandbox="allow-scripts allow-pointer-lock"
+          sandbox="allow-scripts allow-same-origin allow-pointer-lock"
           loading="lazy"
           onLoad={() => setLoading(false)}
           className="absolute inset-0 size-full border-0"

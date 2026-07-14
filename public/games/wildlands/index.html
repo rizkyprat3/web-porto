@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WILDLANDS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="bars">
+    <div class="bar"><span>HP</span><div class="track"><div id="bar-hp" class="fill hp"></div></div></div>
+    <div class="bar"><span>Lapar</span><div class="track"><div id="bar-hunger" class="fill hunger"></div></div></div>
+    <div class="bar"><span>Stamina</span><div class="track"><div id="bar-stam" class="fill stam"></div></div></div>
+    <div class="bar"><span>Suhu</span><div class="track"><div id="bar-temp" class="fill temp"></div></div></div>
+  </div>
+  <div id="hud-day"></div>
+  <div class="compasses">
+    <div class="compass-wrap"><div id="compass-home" class="compass">▲</div><small>Serambi</small></div>
+    <div class="compass-wrap" id="compass-grave-wrap" style="display:none"><div id="compass-grave" class="compass grave">▲</div><small>Nisan</small></div>
+  </div>
+</div>
+<div id="tools"></div>
+<div id="hotbar"></div>
+<div id="prompt"></div>
+<div id="toasts"></div>
+<button id="btn-mute">🔊</button>
+
+<!-- panel crafting -->
+<div id="panel-craft" class="panel"><div class="panel-box">
+  <h2>Crafting <small>[C] tutup</small></h2>
+  <div id="craft-list"></div>
+</div></div>
+
+<!-- buku catatan -->
+<div id="panel-journal" class="panel"><div class="panel-box">
+  <h2>Buku Catatan <small>[J] tutup</small></h2>
+  <div id="journal-body"></div>
+</div></div>
+
+<!-- dialog NPC -->
+<div id="panel-npc" class="panel"><div class="panel-box small">
+  <h2 id="dlg-nama"></h2>
+  <p id="dlg-teks"></p>
+  <div id="npc-actions" class="btn-col"></div>
+</div></div>
+
+<!-- kerja bareng -->
+<div id="panel-work" class="panel"><div class="panel-box small">
+  <h2 id="work-title"></h2>
+  <div id="work-track"><div id="work-zone"></div><div id="work-cursor"></div></div>
+  <p id="work-round"></p>
+</div></div>
+
+<!-- roda titik api -->
+<div id="panel-teleport" class="panel"><div class="panel-box">
+  <h2>Api Memanggil Api <small>-30 lapar</small></h2>
+  <div id="tp-list"></div>
+  <div class="btn-col"><button onclick="uiCloseAll()">Batal</button></div>
+</div></div>
+
+<!-- pedagang -->
+<div id="panel-trader" class="panel"><div class="panel-box">
+  <h2>Pedagang Kapal</h2>
+  <div id="trader-list"></div>
+  <div class="btn-col"><button onclick="uiCloseAll()">Selesai</button></div>
+</div></div>
+
+<!-- ending -->
+<div id="panel-ending" class="panel"><div class="panel-box">
+  <h2>Menara Bara</h2>
+  <div id="ending-body" class="btn-col"></div>
+</div></div>
+
+<!-- pause -->
+<div id="panel-pause" class="panel"><div class="panel-box small">
+  <h2>Jeda</h2>
+  <div class="btn-col">
+    <button id="btn-resume">Lanjut</button>
+    <button id="btn-quit">Simpan & keluar ke menu</button>
+  </div>
+</div></div>
+
+<!-- ingatan kembali -->
+<div id="screen-memory" class="screen"><div class="memory-box">
+  <h2 id="memory-title"></h2>
+  <p id="memory-body"></p>
+  <button id="memory-close">…</button>
+</div></div>
+
+<!-- kematian -->
+<div id="screen-death" class="screen"><div class="memory-box">
+  <h2 id="death-title"></h2>
+  <p id="death-body"></p>
+</div></div>
+
+<!-- loading -->
+<div id="screen-loading" class="screen">
+  <h1>WILDLANDS</h1>
+  <p id="loadtext">Membangun benua…</p>
+  <div id="loadtrack"><div id="loadbar"></div></div>
+</div>
+
+<!-- menu utama -->
+<div id="screen-menu" class="screen">
+  <h1>WILDLANDS</h1>
+  <p class="tagline">Benua yang dilupakan. Lima pelita. Sembilan orang yang bertahan.</p>
+  <div class="btn-col menu-btns">
+    <button id="btn-continue">Lanjutkan</button>
+    <button id="btn-new">Dunia Baru</button>
+    <button id="btn-memorial">Batu Peringatan</button>
+  </div>
+  <div id="memorial-wrap"><div id="memorial-list"></div></div>
+</div>
+
+<!-- pilih mode -->
+<div id="screen-mode" class="screen">
+  <h1>Pilih Jalanmu</h1>
+  <div id="mode-cards"></div>
+  <div id="padam-confirm" style="display:none">
+    <p class="warn">Mode PADAM menghapus save saat kau mati. Tidak ada undo. Ketik <b>PADAM</b>:</p>
+    <input id="padam-input" type="text" autocomplete="off">
+  </div>
+  <div class="mode-opts">
+    <label>Kesulitan
+      <select id="sel-diff"><option>Tenang</option><option selected>Standar</option><option>Kelam</option></select>
+    </label>
+    <label><input type="checkbox" id="mod-luas"> Benua Luas (6144²)</label>
+    <label><input type="checkbox" id="mod-peta"> Tanpa Peta</label>
+    <label><input type="checkbox" id="mod-musim"> Musim Panjang</label>
+    <label><input type="checkbox" id="mod-sendiri"> Sendirian (Serambi kosong)</label>
+  </div>
+  <div id="seed-row"><label>Seed (kosong = acak) <input id="seed-input" type="text" inputmode="numeric"></label></div>
+  <div class="btn-col menu-btns">
+    <button id="btn-start">Mulai</button>
+    <button id="btn-mode-back">Kembali</button>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/noise.js"></script>
+<script src="js/world.js"></script>
+<script src="js/anchors.js"></script>
+<script src="js/objects.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/player.js"></script>
+<script src="js/npc.js"></script>
+<script src="js/quest.js"></script>
+<script src="js/modes.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/save.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

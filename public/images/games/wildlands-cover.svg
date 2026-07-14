@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#1a2238"/>
+      <stop offset="100%" stop-color="#06080e"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff9a3c" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff9a3c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#14507e"/>
+      <stop offset="100%" stop-color="#0b2440"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#sky)"/>
+  <!-- laut -->
+  <rect y="250" width="640" height="110" fill="url(#sea)"/>
+  <path d="M0 252 Q80 246 160 252 T320 252 T480 252 T640 252 V360 H0 Z" fill="#0d2b52" opacity="0.7"/>
+  <!-- benua siluet -->
+  <path d="M-20 260 L60 210 L120 225 L180 175 L240 195 L300 150 L360 185 L420 160 L480 200 L540 180 L620 230 L660 260 Z" fill="#101820"/>
+  <!-- pegunungan bersalju -->
+  <path d="M300 150 L330 195 L270 195 Z" fill="#2a3240"/>
+  <path d="M300 150 L312 168 L288 168 Z" fill="#e3e9ee"/>
+  <path d="M420 160 L448 200 L392 200 Z" fill="#232b38"/>
+  <path d="M420 160 L430 175 L410 175 Z" fill="#cdd6de"/>
+  <!-- menara bara -->
+  <g>
+    <circle cx="180" cy="128" r="46" fill="url(#glow)"/>
+    <rect x="172" y="130" width="16" height="60" fill="#3a3f4a" transform="rotate(-2 180 160)"/>
+    <rect x="168" y="124" width="24" height="8" fill="#2e333d"/>
+    <path d="M180 96 L190 124 L170 124 Z" fill="#ff9a3c"/>
+    <path d="M180 106 L186 124 L174 124 Z" fill="#ffd15c"/>
+  </g>
+  <!-- lima pelita: titik cahaya kecil tersebar -->
+  <circle cx="70" cy="235" r="3" fill="#bfe8ff" opacity="0.9"/>
+  <circle cx="255" cy="205" r="3" fill="#9fdc6f" opacity="0.9"/>
+  <circle cx="330" cy="270" r="3" fill="#e8ecff" opacity="0.9"/>
+  <circle cx="470" cy="215" r="3" fill="#ff7a3a" opacity="0.9"/>
+  <circle cx="415" cy="172" r="3" fill="#bcd8ff" opacity="0.9"/>
+  <!-- bintang -->
+  <g fill="#e8ddc0" opacity="0.5">
+    <circle cx="60" cy="40" r="1.2"/><circle cx="140" cy="70" r="1"/><circle cx="240" cy="35" r="1.4"/>
+    <circle cx="340" cy="60" r="1"/><circle cx="430" cy="30" r="1.2"/><circle cx="520" cy="55" r="1"/>
+    <circle cx="590" cy="90" r="1.3"/><circle cx="480" cy="95" r="0.9"/><circle cx="90" cy="105" r="1"/>
+  </g>
+  <!-- judul -->
+  <text x="320" y="315" text-anchor="middle" font-family="Courier New, monospace" font-size="42" font-weight="bold" fill="#ffd7a0" letter-spacing="14">WILDLANDS</text>
+  <text x="320" y="338" text-anchor="middle" font-family="Courier New, monospace" font-size="12" fill="#8a8fa5" letter-spacing="3">BENUA YANG DILUPAKAN · LIMA PELITA</text>
+</svg>
