@@ -61,4 +61,28 @@ var SFX = {
       (function (f, d) { setTimeout(function () { blip(f, 0.7, 'sine', 0.07); }, d); })(notes[i], i * 160);
     }
   },
+  // chime achievement dua-nada ala Steam: bel cerah + harmonik + kelap-kelip.
+  // Di-synthesize penuh — bukan file, tapi karakternya sama memuaskannya.
+  achievement: function () {
+    if (AudioSys.muted) return;
+    var c = actx(); if (!c) return;
+    function bell(freq, when, dur, vol) {
+      var t0 = c.currentTime + when;
+      var partials = [[1, 1], [2.76, 0.35], [5.4, 0.12]];   // partial bel nyata
+      for (var i = 0; i < partials.length; i++) {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq * partials[i][0];
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(vol * partials[i][1], t0 + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        o.connect(g); g.connect(c.destination);
+        o.start(t0); o.stop(t0 + dur + 0.05);
+      }
+    }
+    bell(740, 0, 0.9, 0.10);      // F#5 — "dö"
+    bell(1108.7, 0.14, 1.4, 0.09); // C#6 — "DING" yang menggantung
+    // kelap-kelip kecil di ekor
+    setTimeout(function () { blip(2217, 0.4, 'sine', 0.02); }, 320);
+  },
 };

@@ -85,6 +85,7 @@ var DIALOG = {
 
 function npcInit() {
   G.npcs = [];
+  initGuards();
   if (G.mods.sendirian) return;
   var s = G.anchors.serambi, T = CFG.TILE;
   for (var i = 0; i < NPCS.length; i++) {
@@ -96,21 +97,60 @@ function npcInit() {
     });
     if (G.rel[d.nama] === undefined) G.rel[d.nama] = 0;
   }
+  // Rua sang pemandu: sedang memetakan pantai saat kapalmu karam,
+  // dan "tidak sengaja" jadi orang pertama yang menemukanmu.
+  if (!G.story.guideDone) {
+    var rua = npcByName('Rua');
+    if (rua) { rua.x = (G.anchors.spawn.x + 3) * T; rua.y = (G.anchors.spawn.y - 3) * T; }
+  }
+}
+
+function npcByName(nama) {
+  for (var i = 0; i < G.npcs.length; i++) if (G.npcs[i].nama === nama) return G.npcs[i];
+  return null;
 }
 
 function npcUpdate(dt) {
   var s = G.anchors.serambi, T = CFG.TILE;
   var hour = G.time.t / CFG.DAY_LEN;
+  var p = G.player;
   for (var i = 0; i < G.npcs.length; i++) {
     var n = G.npcs[i];
-    // jadwal: kerja saat siang, pulang saat gelap
+
+    // ---- mode pemandu: Rua mengantarmu ke Serambi ----
+    if (n.nama === 'Rua' && !G.story.guideDone) {
+      if (!G.story.guideMet) {
+        // menunggu di dekat bangkai kapal, mondar-mandir memetakan
+        n.wanderT -= dt;
+        if (n.wanderT <= 0) { n.ox = (Math.random() - 0.5) * 50; n.oy = (Math.random() - 0.5) * 30; n.wanderT = 2 + Math.random() * 3; }
+        var hx = (G.anchors.spawn.x + 3) * T + (n.ox || 0), hy = (G.anchors.spawn.y - 3) * T + (n.oy || 0);
+        var hdx = hx - n.x, hdy = hy - n.y, hd = Math.hypot(hdx, hdy);
+        if (hd > 8) { n.x += hdx / hd * 50 * dt; n.y += hdy / hd * 50 * dt; n.walkT = (n.walkT || 0) + dt * 8; }
+      } else {
+        // mengantar: jalan ke gerbang selatan, menunggu kalau pemain tertinggal
+        var gateX = s.x * T + 16, gateY = (s.y + 13) * T;
+        var distToPlayer = Math.hypot(n.x - p.x, n.y - p.y);
+        if (distToPlayer < 260) {
+          var gdx = gateX - n.x, gdy = gateY - n.y, gd = Math.hypot(gdx, gdy);
+          if (gd > 10) { n.x += gdx / gd * 118 * dt; n.y += gdy / gd * 118 * dt; n.walkT = (n.walkT || 0) + dt * 11; }
+          else {
+            G.story.guideDone = true;
+            toast('Rua: "Selamat datang di Serambi. Menara di tengah itu — mulai dari sana."');
+            toast('Titik Api di dekat menara adalah gerbang perjalananmu.');
+          }
+        }
+      }
+      continue;
+    }
+
+    // jadwal normal: kerja saat siang, pulang saat gelap
     var spot = (hour > 0.1 && hour < 0.65) ? n.def.work : n.def.home;
     var gx = (s.x + spot[0]) * T + 16, gy = (s.y + spot[1]) * T + 16;
     n.wanderT -= dt;
     if (n.wanderT <= 0) { n.ox = (Math.random() - 0.5) * 60; n.oy = (Math.random() - 0.5) * 60; n.wanderT = 3 + Math.random() * 5; }
     var dx = gx + (n.ox || 0) - n.x, dy = gy + (n.oy || 0) - n.y;
     var dist = Math.hypot(dx, dy);
-    if (dist > 8) { n.x += dx / dist * 55 * dt; n.y += dy / dist * 55 * dt; }
+    if (dist > 8) { n.x += dx / dist * 55 * dt; n.y += dy / dist * 55 * dt; n.walkT = (n.walkT || 0) + dt * 8; }
   }
 }
 
@@ -170,6 +210,109 @@ function npcDisplayName(n) {
   return n.nama;
 }
 
+// ---- mengobrol: pilih jawaban yang sesuai wataknya ----
+// Hybrid dengan kerja bareng: dua jalur keakraban, masing-masing sekali sehari.
+var TALKS = {
+  Sira: [
+    { q: '"Kenapa kau membantu desa ini? Jawab jujur."',
+      opts: [{ t: 'Karena kalian butuh bantuan.', ok: false }, { t: 'Karena ada tugas yang harus selesai.', ok: true }, { t: 'Supaya kalian berutang padaku.', ok: false }],
+      good: '"...Jawaban yang bisa kuhormati." *Dia mengangguk sekali.*', bad: '"Hm. Kata-kata." *Dia kembali menatap tembok.*' },
+    { q: '"Malam ini giliran jagaku. Lagi."',
+      opts: [{ t: 'Istirahatlah, biar aku yang jaga.', ok: true }, { t: 'Kau memang paling kuat di sini.', ok: false }],
+      good: '"...Kau serius? Baik. Satu malam." *Untuk sekali, bahunya turun.*', bad: '"Aku tahu. Itu bukan pujian, itu beban."' },
+  ],
+  Neyra: [
+    { q: '*Dia menunjuk dua bilah di landasan: satu berkilau, satu kusam tapi tebal.*',
+      opts: [{ t: 'Yang berkilau lebih bagus.', ok: false }, { t: 'Yang tebal — itu yang akan pulang dari perang.', ok: true }],
+      good: '*Sudut mulutnya bergerak. Hampir senyum.*', bad: '*Dia menaruh bilah berkilau itu di tumpukan rongsok.*' },
+    { q: '"..." *Dia bekerja. Kau berdiri di situ.*',
+      opts: [{ t: '(Bicara untuk mengisi keheningan)', ok: false }, { t: '(Diam, dan mengangsurkan jepit besi)', ok: true }],
+      good: '*Dia menerima jepit itu tanpa menoleh. Itu artinya kau boleh tinggal.*', bad: '*Suara palunya makin keras sampai kau berhenti bicara.*' },
+  ],
+  Ilma: [
+    { q: '"Lukamu kemarin. Masih perih?"',
+      opts: [{ t: 'Sudah tidak apa-apa, jangan khawatir.', ok: false }, { t: 'Perih. Jahitanmu kasar.', ok: true }],
+      good: '"HA! Akhirnya ada yang jujur di desa ini." *Dia melempar salep padamu.*', bad: '"Jangan khawatir, katanya. Aku tabib, bukan ibumu."' },
+    { q: '"Orang bilang aku dulu penjarah. Kau dengar itu?"',
+      opts: [{ t: 'Masa lalu bukan urusanku.', ok: true }, { t: 'Aku yakin kau punya alasan baik.', ok: false }],
+      good: '"...Bagus. Karena memang bukan." *Tapi dia meraciknya lebih pelan, lebih rapi.*', bad: '"Alasan baik? Aku lapar dan mereka mati. Itu alasannya."' },
+  ],
+  Kanti: [
+    { q: '"Menurutmu bedengan baruku kurang apa?"',
+      opts: [{ t: 'Kelihatannya sudah sempurna!', ok: false }, { t: 'Parit airnya. Hujan deras bisa menggenang.', ok: true }],
+      good: '"NAH! Itu! Kau petani juga rupanya!" *Dia langsung mengambil cangkul.*', bad: '"Sempurna itu kata orang yang tidak pernah menanam."' },
+  ],
+  Rua: [
+    { q: '"Peta lama bilang di timur ada danau. Kakiku bilang tidak ada. Mana yang benar?"',
+      opts: [{ t: 'Peta — arsip tidak berbohong.', ok: false }, { t: 'Kakimu. Peta cuma kertas yang menunggu dikoreksi.', ok: true }],
+      good: '"YA. Persis." *Dia mencoret danau itu dengan puas.*', bad: '"Arsip ditulis orang yang tidak pernah ke timur."' },
+  ],
+  Wenda: [
+    { q: '"A-aku bicara terlalu cepat lagi ya? Sira bilang aku... maaf—"',
+      opts: [{ t: 'Pelan-pelan saja. Aku tidak ke mana-mana.', ok: true }, { t: 'Iya, coba diatur ritmenya.', ok: false }],
+      good: '*Dia menarik napas, dan untuk pertama kalinya menyelesaikan kalimat tanpa tersandung.*', bad: '"O-oh. Iya. Maaf. Diatur. Iya." *Dia menunduk ke bukunya.*' },
+  ],
+  Marsa: [
+    { q: '"HA! Ombak besok setinggi gubuk. Ikut melaut atau takut?"',
+      opts: [{ t: 'Ikut. Kalau tenggelam, itu salahmu.', ok: true }, { t: 'Sebaiknya kita tunggu ombak tenang.', ok: false }],
+      good: '"HAHAHA! Salahku! Aku suka itu! Berangkat fajar, jangan telat!"', bad: '"Menunggu? Laut tidak menghormati orang yang menunggu, kawan."' },
+  ],
+  Ayung: [
+    { q: '*Dia menunjuk jejak di lumpur, lalu menatapmu. Menunggu.*',
+      opts: [{ t: '(Menebak cepat: "Serigala?")', ok: false }, { t: '(Berjongkok, mengamati dulu, baru menunjuk arah timur)', ok: true }],
+      good: '*Dia mengangguk dalam. Serigalanya duduk di sebelahmu — itu belum pernah terjadi.*', bad: '*Dia menggeleng pelan. Bukan soal jawabannya. Soal caramu menjawab.*' },
+  ],
+  Hulan: [
+    { q: '"Kau... mau duduk di sini? Di dekat sumur? Tidak ada yang pernah duduk di sini."',
+      opts: [{ t: '(Duduk tanpa berkata apa-apa)', ok: true }, { t: 'Kenapa tidak ada yang duduk di sini?', ok: false }],
+      good: '*Kalian duduk. Lama. Dan untuk pertama kalinya dia tidak terlihat seperti bayangan.*', bad: '"...Aku tidak ingat. Maaf. Aku benar-benar tidak ingat."' },
+  ],
+};
+
+function startTalk(n) {
+  var bank = TALKS[n.nama];
+  if (!bank || G.talkedToday[n.nama] === G.time.day) return;
+  var item = bank[Math.floor(Math.random() * bank.length)];
+  G.talkedToday[n.nama] = G.time.day;
+  el('dlg-nama').textContent = npcDisplayName(n);
+  el('dlg-teks').textContent = item.q;
+  var html = '';
+  for (var i = 0; i < item.opts.length; i++) html += '<button data-i="' + i + '">' + item.opts[i].t + '</button>';
+  el('npc-actions').innerHTML = html;
+  var nodes = el('npc-actions').querySelectorAll('button');
+  for (var k = 0; k < nodes.length; k++) {
+    nodes[k].onclick = function () {
+      var opt = item.opts[this.getAttribute('data-i')];
+      if (opt.ok) {
+        gainTrust(n);
+        uiDialog(npcDisplayName(n), item.good);
+        SFX.workGood();
+      } else {
+        uiDialog(npcDisplayName(n), item.bad);
+        SFX.workBad();
+      }
+    };
+  }
+}
+
+function gainTrust(n) {
+  G.rel[n.nama] = (G.rel[n.nama] || 0) + 1 + (charDef().trustBonus || 0);
+  if (G.rel[n.nama] === CFG.REL.Rekan || (charDef().trustBonus && G.rel[n.nama] === CFG.REL.Rekan + 1)) {
+    toast(npcDisplayName(n) + ' kini menganggapmu Rekan.');
+    G.relDay[n.nama + '_rekan'] = G.time.day;
+    unlockAch('rekan');
+  }
+  if (G.rel[n.nama] >= CFG.REL.Dipercaya && !G.relDay[n.nama + '_percaya']) {
+    toast(npcDisplayName(n) + ' mulai mempercayaimu.');
+    G.relDay[n.nama + '_percaya'] = G.time.day;
+  }
+  if (G.rel[n.nama] >= CFG.REL.Terikat && !G.relDay[n.nama + '_terikat']) {
+    toast('Kalian kini Terikat — persahabatan sejati, atau mungkin lebih.');
+    G.relDay[n.nama + '_terikat'] = G.time.day;
+    unlockAch('terikat');
+  }
+}
+
 // ---- kerja bareng: minigame timing 3 ronde ----
 // Bar berjalan; tekan pada zona hijau. Berhasil 2/3 → +1 trust + hadiah kecil.
 var WORK_LABEL = {
@@ -204,11 +347,7 @@ function finishWork() {
   G.workedToday[n.nama] = G.time.day;
   uiHideWork();
   if (w.hits >= 2) {
-    G.rel[n.nama] = (G.rel[n.nama] || 0) + 1;
-    var lvl = relLevel(n.nama);
-    if (G.rel[n.nama] === CFG.REL.Rekan) { toast(npcDisplayName(n) + ' kini menganggapmu Rekan.'); G.relDay[n.nama + '_rekan'] = G.time.day; }
-    if (G.rel[n.nama] === CFG.REL.Dipercaya) { toast(npcDisplayName(n) + ' mulai mempercayaimu.'); G.relDay[n.nama + '_percaya'] = G.time.day; }
-    if (G.rel[n.nama] === CFG.REL.Terikat) toast('Kalian kini terikat — persahabatan sejati, atau mungkin lebih.');
+    gainTrust(n);
     var rw = WORK_REWARD[n.nama];
     for (var res in rw) { G.player.inv[res] += rw[res]; toast('+' + rw[res] + ' ' + RES_NAMA[res] + ' dari ' + npcDisplayName(n)); }
     if (n.nama === 'Rua' && G.rel.Rua >= CFG.REL.Rekan) toast('Rua melingkari wilayah pelita di petamu (M).');
@@ -235,6 +374,7 @@ function propose(n) {
   var c = canMarry(n);
   if (!c.ok) { uiDialog(npcDisplayName(n), '"Belum." — ' + c.why); return; }
   G.story.married = n.nama;
+  unlockAch('menikah');
   G.player.has.ring = false;
   G.lastEvent = 'married';
   uiDialog(n.nama, n.nama === 'Neyra'

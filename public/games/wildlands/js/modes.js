@@ -79,6 +79,7 @@ function pickupGrave() {
     p.inv[k] += G.grave.items[k];
   }
   toast('Barang-barangmu kembali. Semuanya.');
+  unlockAch('roboh');
   SFX.chest();
   G.grave = null;
   autoSave();

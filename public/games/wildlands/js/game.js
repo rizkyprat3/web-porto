@@ -66,6 +66,13 @@ function interact() {
     }
   }
 
+  // Titik Api (gerbang perjalanan api di desa)
+  var wtx = Math.floor(ptx), wty = Math.floor(pty);
+  for (var wy = -2; wy <= 2; wy++) for (var wx = -2; wx <= 2; wx++) {
+    var wo = G.world.objectAt(wtx + wx, wty + wy);
+    if (wo && wo.waypoint) { uiTeleport(); return; }
+  }
+
   // menara bara
   if (Math.hypot(ptx - a.serambi.x, pty - a.serambi.y) < 4) {
     if (endingAvailable()) { uiEndingChoice(); return; }
@@ -135,6 +142,11 @@ function updatePrompt() {
       return;
     }
   }
+  var wtx2 = Math.floor(ptx), wty2 = Math.floor(pty);
+  for (var wy2 = -2; wy2 <= 2; wy2++) for (var wx2 = -2; wx2 <= 2; wx2++) {
+    var wo2 = G.world.objectAt(wtx2 + wx2, wty2 + wy2);
+    if (wo2 && wo2.waypoint) { G.prompt = '[E] Titik Api — perjalanan api'; return; }
+  }
   if (Math.hypot(ptx - a.serambi.x, pty - a.serambi.y) < 4) {
     G.prompt = endingAvailable() ? '[E] Menara Bara — SEMUA PELITA MENYALA' : isNight() ? '[E] Tidur sampai fajar' : '[E] Menara Bara — perjalanan api';
     return;
@@ -161,16 +173,18 @@ function newGame(seed) {
     G.world = world; G.anchors = world.anchors;
     var T = CFG.TILE, sp = world.anchors.spawn;
     G.player = makePlayer(sp.x * T + 16, sp.y * T - 20);
+    applyCharStart(G.player);
     G.time = { day: 1, t: 65 };
     G.stats = {};
-    G.story = { lit: {}, married: null, hulanNamed: false, journal: [], houseUpgraded: false, endingSeen: null };
-    G.rel = {}; G.relDay = {}; G.beacons = []; G.seen = {}; G.workedToday = {};
+    G.story = { lit: {}, married: null, hulanNamed: false, journal: [], houseUpgraded: false, endingSeen: null, guideMet: false, guideDone: !!G.mods.sendirian };
+    G.rel = {}; G.relDay = {}; G.beacons = []; G.seen = {}; G.workedToday = {}; G.talkedToday = {};
     G.grave = null; G.enemies = []; G.fx = []; G.projectiles = [];
     npcInit();
     questInit();
     attachPlayerHooks();
     G.state = 'play';
-    toast('Kapalmu karam. Ada menara dengan api oranye di utara.');
+    unlockAch('kaki_darat');
+    toast(G.mods.sendirian ? 'Kapalmu karam. Ada menara dengan api oranye di utara.' : 'Kapalmu karam. Seseorang berdiri di antara puing — hampiri dia (E).');
     toast('WASD gerak · E interaksi · klik serang · C crafting · J catatan');
     if (!LS.persistent) toast('Penyimpanan browser tidak tersedia — progres hilang saat tab ditutup.', 8);
     saveGame();
@@ -216,6 +230,8 @@ function loop(t) {
       }
       updateFog();
       updatePrompt();
+      G._achT = (G._achT || 0) + dt;
+      if (G._achT > 5) { G._achT = 0; achTick(); }
       updateAutosave(dt);
     }
     render(t);
@@ -233,7 +249,8 @@ function updateTime(dt) {
   if (G.time.t >= CFG.DAY_LEN) {
     G.time.t = 0;
     G.time.day++;
-    G.workedToday = {};
+    G.workedToday = {}; G.talkedToday = {};
+    if (G.time.day === 2) unlockAch('malam_pertama');
     saveGame();   // autosave tiap fajar
     if (G.time.day % CFG.TRADER_EVERY === 0 && !G.mods.sendirian) toast('Sebuah kapal dagang berlabuh di dermaga Serambi.');
   }
@@ -284,6 +301,23 @@ function uiModeSelect() {
     };
   }
   nodes[0].classList.add('sel');
+
+  // kartu karakter
+  var chtml = '';
+  for (var c = 0; c < CHARS.length; c++) {
+    var cd = CHARS[c];
+    chtml += '<div class="mode-card char-card' + (cd.id === G.charId ? ' sel' : '') + '" data-char="' + cd.id + '"><h3>' + cd.icon + ' ' + cd.nama + '</h3><p>' + cd.desc + '</p></div>';
+  }
+  el('char-cards').innerHTML = chtml;
+  var cnodes = el('char-cards').querySelectorAll('.char-card');
+  for (var ci = 0; ci < cnodes.length; ci++) {
+    cnodes[ci].onclick = function () {
+      G.charId = this.getAttribute('data-char');
+      var all = el('char-cards').querySelectorAll('.char-card');
+      for (var j = 0; j < all.length; j++) all[j].classList.remove('sel');
+      this.classList.add('sel');
+    };
+  }
 }
 
 function startFromModeScreen() {
@@ -302,8 +336,9 @@ function startFromModeScreen() {
   var seed;
   if (G.mode === 'MUSAFIR') seed = musafirSeed();
   else {
+    // benua standar: seed TETAP — Serambi dan kelima pelita selalu di tempat yang sama
     var sv = el('seed-input').value.trim();
-    seed = sv ? (parseInt(sv, 10) || 1) : (1 + Math.floor(Math.random() * 999999));
+    seed = sv ? (parseInt(sv, 10) || 777) : 777;
   }
   hide('screen-mode');
   newGame(seed);

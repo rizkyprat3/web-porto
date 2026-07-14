@@ -14,7 +14,7 @@ function makePlayer(x, y) {
 }
 
 function playerMaxHp(p) {
-  var m = CFG.MAXHP;
+  var m = CFG.MAXHP + (charDef().hpBonus || 0);
   if (p.has.leather) m += 25;
   if (p.has.plate) m += 50;
   return Math.round(m * (p.weakened ? 0.9 : 1));
@@ -23,7 +23,17 @@ function playerMaxHp(p) {
 function playerDamage(p) {
   if (p.has.sword2) return 34;
   if (p.has.sword) return 22;
+  if (p.has.gada) return 18;
   return CFG.LIGHT_DMG;
+}
+
+function applyCharStart(p) {
+  var c = charDef();
+  if (c.start) {
+    for (var h in (c.start.has || {})) p.has[h] = true;
+    for (var r in (c.start.inv || {})) p.inv[r] = (p.inv[r] || 0) + c.start.inv[r];
+  }
+  p.hp = playerMaxHp(p);
 }
 
 function updatePlayer(dt, input) {
@@ -43,8 +53,9 @@ function updatePlayer(dt, input) {
   if (input.left) mx -= 1; if (input.right) mx += 1;
   var moving = mx || my;
   var len = Math.hypot(mx, my) || 1;
+  var ch = charDef();
   var sprinting = input.sprint && moving && p.stam > 1;
-  var spd = sprinting ? CFG.SPRINT : CFG.WALK;
+  var spd = (sprinting ? CFG.SPRINT : CFG.WALK) * (ch.spd || 1);
   if (p.has.plate) spd *= 0.9;
   var tb = G.world.biomeAt(Math.floor(p.x / T), Math.floor(p.y / T));
   if (tb.boatable && p.has.boat) spd *= 1.5;
@@ -55,15 +66,17 @@ function updatePlayer(dt, input) {
     tryMove(p, dvx * dt, dvy * dt);
   } else if (moving) {
     p.face = Math.atan2(my, mx);
+    p.walkT = (p.walkT || 0) + dt * (sprinting ? 15 : 10);
     tryMove(p, (mx / len) * spd * dt, (my / len) * spd * dt);
   }
 
   // dodge
-  if (input.dodge && p.dodgeT <= 0 && p.stam >= CFG.STAM_DODGE) {
+  var dodgeCost = ch.dodgeCost || CFG.STAM_DODGE;
+  if (input.dodge && p.dodgeT <= 0 && p.stam >= dodgeCost) {
     p.dodgeT = CFG.DODGE_TIME;
     p.iframe = CFG.DODGE_IFRAME;
     p.dodgeDir = moving ? Math.atan2(my, mx) : p.face;
-    p.stam -= CFG.STAM_DODGE;
+    p.stam -= dodgeCost;
     SFX.dodge();
   }
   input.dodge = false;
@@ -80,15 +93,16 @@ function updatePlayer(dt, input) {
   }
 
   // ---- survival drain ----
-  var hungerRate = CFG.HUNGER_RATE * drain * (sprinting ? CFG.HUNGER_SPRINT_MULT : 1);
+  var hungerRate = CFG.HUNGER_RATE * drain * (ch.hungerMult || 1) * (sprinting ? CFG.HUNGER_SPRINT_MULT : 1);
   p.hunger = Math.max(0, p.hunger - hungerRate * dt);
 
   var night = isNight();
   var cold = tb.cold;
   var nearFire = isNearFire(p);
+  var tempMult = ch.tempMult || 1;   // barbarian tanpa baju: dingin lebih kejam
   if (nearFire) p.temp = Math.min(CFG.MAXTEMP, p.temp + CFG.TEMP_FIRE_GAIN * dt);
-  else if (cold) p.temp = Math.max(0, p.temp - CFG.TEMP_SNOW_DRAIN * drain * (p.has.coat ? 0.35 : 1) * dt);
-  else if (night) p.temp = Math.max(0, p.temp - CFG.TEMP_NIGHT_DRAIN * drain * (p.has.coat || p.has.leather ? 0.5 : 1) * dt);
+  else if (cold) p.temp = Math.max(0, p.temp - CFG.TEMP_SNOW_DRAIN * drain * tempMult * (p.has.coat ? 0.35 : 1) * dt);
+  else if (night) p.temp = Math.max(0, p.temp - CFG.TEMP_NIGHT_DRAIN * drain * tempMult * (p.has.coat || p.has.leather ? 0.5 : 1) * dt);
   else p.temp = Math.min(CFG.MAXTEMP, p.temp + CFG.TEMP_DAY_GAIN * dt);
 
   if (p.hunger <= 0) p.hp -= CFG.STARVE_DPS * dt;
@@ -96,8 +110,9 @@ function updatePlayer(dt, input) {
   if (p.hunger > 60 && p.temp > 40 && p.hp < playerMaxHp(p)) p.hp = Math.min(playerMaxHp(p), p.hp + CFG.REGEN_HPS * dt);
 
   // stamina
+  var stamRegen = ch.stamRegenMult || 1;
   if (sprinting) p.stam = Math.max(0, p.stam - CFG.STAM_SPRINT * dt);
-  else p.stam = Math.min(CFG.MAXSTAM, p.stam + (moving ? CFG.STAM_REGEN_MOVE : CFG.STAM_REGEN_IDLE) * dt);
+  else p.stam = Math.min(CFG.MAXSTAM, p.stam + (moving ? CFG.STAM_REGEN_MOVE : CFG.STAM_REGEN_IDLE) * stamRegen * dt);
 
   if (p.hp <= 0) playerDie();
 }
@@ -117,7 +132,7 @@ function doAttack(p, heavy) {
   p.stam -= cost;
   p.atkCd = CFG.ATTACK_CD * (heavy ? 1.8 : 1);
   p.swing = 0.22; p.swingHeavy = heavy;
-  var dmg = playerDamage(p) * (heavy ? CFG.HEAVY_MULT : 1);
+  var dmg = playerDamage(p) * (heavy ? (charDef().heavyMult || CFG.HEAVY_MULT) : 1);
   var range = heavy ? CFG.HEAVY_RANGE : CFG.LIGHT_RANGE;
   SFX.swing();
 
@@ -205,6 +220,10 @@ function craft(id) {
   for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) r = RECIPES[i];
   var p = G.player;
   if (!r || p.has[id]) return false;
+  if (charDef().noArmor && (id === 'leather' || id === 'plate')) {
+    toast('Barbarian tidak memakai zirah. Kulitnya adalah zirahnya.');
+    return false;
+  }
   if (r.npc && (G.rel[r.npc] || 0) < CFG.REL.Rekan && !G.mods.sendirian) {
     toast('Butuh bantuan ' + r.npc + ' — jadilah Rekan-nya dulu (bekerja bersamanya).');
     return false;
@@ -219,6 +238,7 @@ function craft(id) {
   else if (id === 'campfire') { p.inv.campfireKit = (p.inv.campfireKit || 0) + 1; toast('Api unggun siap diletakkan (F).'); }
   else if (id === 'house') { G.story.houseUpgraded = true; toast('Rumahmu kini layak dihuni dua orang.'); }
   else { p.has[id] = true; toast(r.nama + ' selesai dibuat.'); }
+  if (id === 'axe' || id === 'pick' || id === 'torch') unlockAch('alat_pertama');
   SFX.craft();
   return true;
 }

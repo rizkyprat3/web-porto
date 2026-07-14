@@ -190,6 +190,87 @@ var OBJ = {
     },
   },
   lanternBlock: { name: 'lanternBlock', label: 'Pelita', solid: true, hp: 9999, drops: {}, lantern: true, draw: function () {} },
+
+  // pertahanan Serambi ------------------------------------------------
+  watchtower: {
+    name: 'watchtower', label: 'Menara Jaga', solid: true, hp: 9999, fire: true, light: 190,
+    drops: {},
+    draw: function (g, x, y, t) {
+      objShadow(g, x, y, 11);
+      g.fillStyle = '#6b6560'; g.fillRect(x + 8, y - 18, 16, 46);
+      g.fillStyle = '#7d7a74'; g.fillRect(x + 5, y - 24, 22, 8);
+      g.fillStyle = '#5d4630';
+      g.fillRect(x + 6, y - 30, 3, 8); g.fillRect(x + 23, y - 30, 3, 8);
+      // api penjagaan di puncak
+      var f = Math.sin(t * 0.012 + x) * 2;
+      g.save(); g.shadowColor = '#ff9a3c'; g.shadowBlur = 12;
+      g.fillStyle = '#e8792b';
+      g.beginPath(); g.moveTo(x + 16, y - 40 - f); g.lineTo(x + 21, y - 25); g.lineTo(x + 11, y - 25); g.closePath(); g.fill();
+      g.restore();
+    },
+  },
+  gatePost: {
+    name: 'gatePost', label: 'Obor Gerbang', solid: true, hp: 9999, fire: true, light: 150,
+    drops: {},
+    draw: function (g, x, y, t) {
+      g.fillStyle = '#5d4630'; g.fillRect(x + 13, y + 2, 6, 26);
+      var f = Math.sin(t * 0.014 + y) * 2;
+      g.save(); g.shadowColor = '#ff9a3c'; g.shadowBlur = 10;
+      g.fillStyle = '#ffd15c';
+      g.beginPath(); g.moveTo(x + 16, y - 8 - f); g.lineTo(x + 21, y + 4); g.lineTo(x + 11, y + 4); g.closePath(); g.fill();
+      g.restore();
+    },
+  },
+  spikes: {
+    name: 'spikes', label: 'Jebakan Duri', solid: false, hp: 9999,
+    drops: {},
+    draw: function (g, x, y) {
+      g.fillStyle = '#4a4a4e';
+      for (var i = 0; i < 4; i++) {
+        var sx = x + 4 + i * 7;
+        g.beginPath(); g.moveTo(sx, y + 26); g.lineTo(sx + 3, y + 12); g.lineTo(sx + 6, y + 26); g.closePath(); g.fill();
+      }
+      g.fillStyle = '#8d8b86';
+      for (var j = 0; j < 4; j++) {
+        var sx2 = x + 4 + j * 7;
+        g.beginPath(); g.moveTo(sx2 + 1.5, y + 20); g.lineTo(sx2 + 3, y + 12); g.lineTo(sx2 + 4.5, y + 20); g.closePath(); g.fill();
+      }
+    },
+  },
+
+  // Titik Api desa: gerbang perjalanan api yang terlihat jelas dari jauh
+  waypoint: {
+    name: 'waypoint', label: 'Titik Api', solid: true, hp: 9999, fire: true, light: 220, waypoint: true,
+    drops: {},
+    draw: function (g, x, y, t) {
+      objShadow(g, x, y, 13);
+      // cincin batu berukir
+      g.strokeStyle = '#7d7a74'; g.lineWidth = 4;
+      g.beginPath(); g.ellipse(x + 16, y + 22, 15, 7, 0, 0, Math.PI * 2); g.stroke();
+      g.fillStyle = '#5d5a55';
+      for (var i = 0; i < 4; i++) {
+        var a = i * 1.57 + 0.78;
+        g.fillRect(x + 16 + Math.cos(a) * 14 - 2, y + 22 + Math.sin(a) * 6 - 5, 4, 10);
+      }
+      // api gerbang: oranye dengan inti biru
+      var f = Math.sin(t * 0.01) * 3;
+      g.save(); g.shadowColor = '#ff9a3c'; g.shadowBlur = 20;
+      g.fillStyle = '#e8792b';
+      g.beginPath(); g.moveTo(x + 16, y - 6 - f); g.lineTo(x + 25, y + 20); g.lineTo(x + 7, y + 20); g.closePath(); g.fill();
+      g.fillStyle = '#ffd15c';
+      g.beginPath(); g.moveTo(x + 16, y + 2 - f * 0.6); g.lineTo(x + 21, y + 20); g.lineTo(x + 11, y + 20); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(120,190,255,0.8)';
+      g.beginPath(); g.moveTo(x + 16, y + 9 - f * 0.3); g.lineTo(x + 19, y + 20); g.lineTo(x + 13, y + 20); g.closePath(); g.fill();
+      g.restore();
+      // label melayang — supaya fungsinya terbaca dari jauh
+      var bob = Math.sin(t * 0.003) * 2;
+      g.font = 'bold 10px monospace'; g.textAlign = 'center';
+      g.fillStyle = 'rgba(0,0,0,0.55)';
+      g.fillRect(x - 14, y - 26 + bob, 60, 13);
+      g.fillStyle = '#ffd7a0';
+      g.fillText('TITIK API', x + 16, y - 16 + bob);
+    },
+  },
 };
 
 function drawFireSmall(g, x, y, t) {

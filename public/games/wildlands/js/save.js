@@ -9,7 +9,7 @@ function saveGame() {
     version: SAVE_VERSION,
     seed: G.world.seed,
     worldSize: CFG.WORLD,
-    mode: G.mode, diff: G.diff, mods: G.mods,
+    mode: G.mode, diff: G.diff, mods: G.mods, charId: G.charId,
     time: G.time,
     player: {
       x: p.x, y: p.y, hp: p.hp, hunger: p.hunger, stam: p.stam, temp: p.temp,
@@ -24,6 +24,7 @@ function saveGame() {
     beacons: G.beacons,
     seen: G.seen,
     workedToday: G.workedToday,
+    talkedToday: G.talkedToday,
     stats: G.stats,
     fog: G.fog ? fogPack(G.fog) : null,
   };
@@ -64,7 +65,7 @@ function loadGame(onReady) {
     return false;
   }
   CFG.WORLD = d.worldSize || 4096;
-  G.mode = d.mode; G.diff = d.diff; G.mods = d.mods || {};
+  G.mode = d.mode; G.diff = d.diff; G.mods = d.mods || {}; G.charId = d.charId || 'rakyat';
   startWorldGen(d.seed, function (world) {
     G.world = world; G.anchors = world.anchors;
     world.harvested = d.harvested || {};
@@ -81,6 +82,8 @@ function loadGame(onReady) {
     G.beacons = d.beacons || [];
     G.seen = d.seen || {};
     G.workedToday = d.workedToday || {};
+    G.talkedToday = d.talkedToday || {};
+    if (G.story.guideDone === undefined) { G.story.guideMet = true; G.story.guideDone = true; }
     G.stats = d.stats || {};
     G.fog = d.fog ? fogUnpack(d.fog) : null;
     npcInit();

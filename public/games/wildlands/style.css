@@ -87,6 +87,27 @@ button.dim { opacity: 0.5; }
 .warn { color: #c05a4a; font-size: 12px; max-width: 420px; margin-bottom: 8px; }
 #padam-confirm { margin-bottom: 14px; }
 
+/* karakter */
+.mode-sub { font-size: 13px; letter-spacing: 4px; color: #8a8fa5; margin: 6px 0 10px; }
+#char-cards { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 900px; margin-bottom: 18px; }
+.char-card { width: 200px; }
+
+/* popup achievement — ala Steam, pojok kiri bawah */
+#ach-pop { position: fixed; left: 18px; bottom: -110px; z-index: 60; display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(180deg, #23262e, #16181e); border: 1px solid #3a3f4c; border-radius: 6px;
+  padding: 12px 18px 12px 14px; min-width: 260px; box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  transition: bottom 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1); pointer-events: none; }
+#ach-pop.on { bottom: 18px; }
+#ach-icon { font-size: 30px; filter: drop-shadow(0 0 6px rgba(255,215,160,0.5)); }
+#ach-pop small { display: block; font-size: 9px; letter-spacing: 3px; color: #8a8fa5; }
+#ach-pop b { display: block; font-size: 14px; color: #ffd7a0; margin: 2px 0; }
+#ach-pop em { display: block; font-size: 10px; font-style: normal; color: #b8c2d8; }
+
+/* grid achievement di jurnal */
+.ach-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.ach { font-size: 10px; border: 1px solid rgba(138,143,165,0.3); padding: 4px 8px; opacity: 0.4; }
+.ach.got { opacity: 1; border-color: rgba(255,215,160,0.5); color: #ffd7a0; }
+
 /* ingatan */
 .memory-box { max-width: 560px; background: rgba(10,12,18,0.97); border: 1px solid rgba(255,215,160,0.4); padding: 34px; }
 .memory-box h2 { color: #ffd7a0; font-size: 16px; letter-spacing: 3px; margin-bottom: 16px; }

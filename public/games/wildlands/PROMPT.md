@@ -8,6 +8,19 @@ Nama game: **WILDLANDS**.
 
 > Cerita, karakter, dialog, relasi, dan pernikahan didefinisikan di **`STORY.md`**. Dokumen ini dan `STORY.md` adalah satu spesifikasi utuh — baca dua-duanya sebelum menulis kode.
 
+## Karakter (dipilih sebelum masuk dunia)
+
+Empat karakter dengan playstyle berbeda nyata — bukan sekadar kulit:
+
+| Karakter | Kekuatan | Kelemahan |
+|---|---|---|
+| **Kesatria** | Mulai dengan pedang tua, +20 HP | Zirah berat: gerak -8%, lapar +15% |
+| **Rakyat Biasa** | Kepercayaan penduduk tumbuh 2× lebih cepat; bekal awal | Tidak ada bonus tempur |
+| **Barbarian** | Gada (damage tinggi, serangan berat 3×), +25 HP, gerak +8% | Tanpa baju: dingin 35% lebih kejam, TIDAK BISA memakai zirah |
+| **Pengembara** | Stamina pulih +30%, dodge lebih murah, mulai dengan obor | Standar di sisa lainnya |
+
+Pemain boleh perempuan, dan seluruh penduduk Serambi perempuan — romansa sesama perempuan adalah bagian sah dari dunia ini, tanpa komentar, tanpa drama. Sistem relasi memperlakukan semua pemain persis sama.
+
 ## Konsep
 
 Pemain terdampar di sebuah benua terpencil yang benuanya dibangkitkan prosedural dari sebuah seed. Di tengahnya ada satu permukiman kecil bernama **Serambi**, sisa terakhir sebuah ordo penjaga mercusuar. Di luar gerbang Serambi, dunia luas, dingin, dan tidak peduli padamu.
@@ -111,7 +124,7 @@ Sediakan **`Benua Luas` (6144²)** sebagai modifier opsional di layar mode, deng
 Dunia boleh acak, tapi **tempat-tempat penting tidak boleh acak.** Saat dunia dibuat, jalankan langkah ini **sekali** dan simpan hasilnya:
 
 1. **Spawn** — bangkai kapal di pantai, selalu di sisi selatan benua.
-2. **Serambi** — dicari di darat 150–250 tile ke arah utara dari spawn; pilih tile yang datar dan dekat air tawar. Perjalanan pertama dari bangkai kapal ke Serambi ≈ 1 menit: cukup untuk memperkenalkan dunia, cukup pendek untuk tidak menyiksa.
+2. **Serambi** — dicari di darat 150–250 tile ke arah utara dari spawn. **Desa ini BERBENTENG** — di dunia yang penuh Benih Kelam, tidak ada yang hidup tanpa penjagaan: tembok keliling penuh dengan gerbang selatan (3 tile) & utara (1 tile), **menara jaga berapi di empat sudut**, **jebakan duri** di cincin luar tembok (mencabik musuh yang mendekat, koridor gerbang dibiarkan bersih), dan **empat milisi Sira** yang berpatroli dan menyerang apa pun yang menembus. Di dekat Menara Bara berdiri **Titik Api** — gerbang teleport desa yang berlabel dan terlihat menyala dari jauh.
 3. **Lima Pelita** — masing-masing wajib berada di biome yang ditentukan (`pantai`, `rimba`, `pulau lepas pantai`, `gurun`, `puncak salju`) **dan** dalam pita jarak yang naik bertahap dari Serambi: **± 400 / 800 / 1200 / 1600 / 1900 tile** (skalakan proporsional kalau ukuran dunia diubah). Cari kandidat tile yang memenuhi syarat, pilih deterministik dari seed.
 4. **Validasi keterjangkauan.** Lakukan **flood-fill kasar** (downsample 8×) dari Serambi. Setiap pelita harus terjangkau lewat darat — kecuali Pelita Garam yang memang butuh perahu. Kalau ada yang tidak terjangkau, **pilih kandidat berikutnya dan ulangi.** Kalau setelah sekian percobaan tetap gagal, **buang seed itu dan buat benua baru.** Jangan pernah kirim pemain ke dunia yang tidak bisa ditamatkan.
 
@@ -264,6 +277,8 @@ Tiga tingkat, bukan satu — supaya kurva progresi merentang sepanjang lima baba
 
 ## Musuh & combat
 
+**Benih Kelam** — mikroorganisme mutasi (virus, bakteri, spora) adalah wujud kecil sang pemakan ingatan yang merembes ke dunia. Merekalah alasan tidak ada manusia yang hidup di luar tembok.
+
 Combat harus cukup dalam untuk menopang dunia sebesar ini. Minimal:
 
 - **Serangan ringan** — ayunan busur ke arah kursor, cepat, murah stamina.
@@ -272,7 +287,9 @@ Combat harus cukup dalam untuk menopang dunia sebesar ini. Minimal:
 
 | Musuh | Perilaku |
 |---|---|
-| **Slime** | Siang, lambat, pasif sampai diserang. Musuh latihan. |
+| **Virus** (Benih Kelam) | Kecil, cepat, datang ber-swarm 3. Siang & malam. |
+| **Bakteri** (Benih Kelam) | Kapsul lambat ber-flagela, HP tebal, kontak damage besar. |
+| **Spora** (Benih Kelam) | Nyaris diam, berdenyut. SAAT MATI PECAH jadi 2 virus + ledakan — menghukum kill ceroboh dari jarak dekat. |
 | **Serigala** | Malam, berkelompok 2–4, cepat, mengepung dari sisi. |
 | **Bandit penebas** | Dekat reruntuhan, agresif, bisa memblok serangan ringan |
 | **Bandit pemanah** | **Serangan jarak jauh.** Menjaga jarak, memaksa pemain mendekat sambil menghindar. Ini yang mematahkan taktik "berdiri diam dan ayunkan pedang". |

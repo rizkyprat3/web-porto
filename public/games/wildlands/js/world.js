@@ -57,7 +57,7 @@ World.prototype.biomeAt = function (tx, ty) {
 
 World.prototype.inSerambi = function (tx, ty) {
   var a = this.anchors; if (!a) return false;
-  return Math.abs(tx - a.serambi.x) <= 15 && Math.abs(ty - a.serambi.y) <= 15;
+  return Math.abs(tx - a.serambi.x) <= 19 && Math.abs(ty - a.serambi.y) <= 19;
 };
 
 // Objek adalah fungsi murni dari posisi. Regrow: objek yang dipanen tumbuh

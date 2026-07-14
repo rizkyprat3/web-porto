@@ -36,7 +36,7 @@ function uiUpdateHUD() {
 
   // alat
   var tools = [];
-  ['axe', 'pick', 'torch', 'axe2', 'pick2', 'sword', 'sword2', 'leather', 'plate', 'coat', 'boat', 'ring'].forEach(function (t2) {
+  ['gada', 'axe', 'pick', 'torch', 'axe2', 'pick2', 'sword', 'sword2', 'leather', 'plate', 'coat', 'boat', 'ring'].forEach(function (t2) {
     if (p.has[t2]) tools.push(TOOL_LABEL[t2]);
   });
   el('tools').textContent = tools.length ? tools.join(' · ') : '';
@@ -50,7 +50,7 @@ function uiUpdateHUD() {
 }
 
 var RES_COLOR = { kayu: '#8a6a45', batu: '#8d8b86', besi: '#a8763a', bintang: '#96d2ff', makanan: '#c0392b', masak: '#e8a33c', kulit: '#a0703f', kain: '#c9c2d8', bara: '#ff8c42', emas: '#ffd15c' };
-var TOOL_LABEL = { axe: 'Kapak', pick: 'Beliung', torch: 'Obor', axe2: 'Kapak Besi', pick2: 'Beliung Besi', sword: 'Pedang', sword2: 'Pedang Bara', leather: 'Zirah Kulit', plate: 'Zirah Lempeng', coat: 'Mantel', boat: 'Perahu', ring: 'Cincin✦' };
+var TOOL_LABEL = { gada: 'Gada', axe: 'Kapak', pick: 'Beliung', torch: 'Obor', axe2: 'Kapak Besi', pick2: 'Beliung Besi', sword: 'Pedang', sword2: 'Pedang Bara', leather: 'Zirah Kulit', plate: 'Zirah Lempeng', coat: 'Mantel', boat: 'Perahu', ring: 'Cincin✦' };
 
 // ---- panel crafting ----
 function uiToggleCraft() {
@@ -97,6 +97,13 @@ function uiToggleJournal() {
       ' · <span class="lvl-' + lvl + '">' + lvl + '</span>' +
       (G.story.married === npc.nama ? ' ♥' : '') + '</p>';
   }
+  html += '<h3>Achievement</h3><div class="ach-grid">';
+  var got = achUnlocked();
+  for (var ai = 0; ai < ACHS.length; ai++) {
+    var A = ACHS[ai];
+    html += '<div class="ach' + (got[A.id] ? ' got' : '') + '" title="' + A.desc + '">' + A.icon + ' ' + (got[A.id] ? A.nama : '???') + '</div>';
+  }
+  html += '</div>';
   html += '<p class="dim">Pelita menyala: ' + litCount() + '/5 · Hari ' + G.time.day + ' · Mode ' + G.mode + '</p>';
   el('journal-body').innerHTML = html;
   show('panel-journal');
@@ -104,6 +111,7 @@ function uiToggleJournal() {
 
 function uiCloseAll() {
   ['panel-craft', 'panel-journal', 'panel-npc', 'panel-teleport', 'panel-trader', 'panel-work', 'panel-ending', 'screen-memory', 'panel-pause'].forEach(hide);
+  if (G.ui) G.ui.mapOpen = false;
   G.paused = false;
 }
 
@@ -118,15 +126,29 @@ function uiDialog(nama, teks) {
 
 function uiNpcMenu(n) {
   uiCloseAll(); G.paused = true;
+
+  // fase pemandu: Rua di bangkai kapal
+  if (n.nama === 'Rua' && !G.story.guideDone) {
+    if (!G.story.guideMet) {
+      G.story.guideMet = true;
+      uiDialog('Rua', '"Kau... hidup? Aku sedang memetakan garis pantai dan— tidak penting. Orang asing tidak bertahan semalam di luar sini. Ikut aku — Serambi di utara. Jangan jauh-jauh."');
+    } else {
+      uiDialog('Rua', '"Jangan jauh-jauh dariku. Lewat sini — desa kami di balik tembok itu."');
+    }
+    return;
+  }
+
   el('dlg-nama').textContent = npcDisplayName(n);
   el('dlg-teks').textContent = npcLine(n);
   var html = '';
+  if (TALKS[n.nama] && G.talkedToday[n.nama] !== G.time.day) html += '<button id="btn-talk">Mengobrol</button>';
   if (G.workedToday[n.nama] !== G.time.day) html += '<button id="btn-work">' + WORK_LABEL[n.nama] + '</button>';
   if (relLevel(n.nama) === 'Terikat' && !G.story.married && !(n.nama === 'Hulan' && !G.story.hulanNamed)) {
     html += '<button id="btn-marry">Lamar</button>';
   }
   html += '<button onclick="uiCloseAll()">Pergi</button>';
   el('npc-actions').innerHTML = html;
+  if (el('btn-talk')) el('btn-talk').onclick = function () { startTalk(n); };
   if (el('btn-work')) el('btn-work').onclick = function () { uiCloseAll(); startWork(n); };
   if (el('btn-marry')) el('btn-marry').onclick = function () { propose(n); };
   show('panel-npc');
@@ -157,7 +179,7 @@ function uiTeleport() {
   if (!isDaytime()) { toast('Api hanya memanggil api di bawah matahari. Tunggu siang.'); return; }
   uiCloseAll(); G.paused = true;
   var a = G.anchors, T = CFG.TILE, dests = [];
-  dests.push({ nama: 'Menara Bara — Serambi', icon: 'tower', x: a.serambi.x * T + 16, y: (a.serambi.y + 3) * T });
+  dests.push({ nama: 'Titik Api — Serambi', icon: 'tower', x: (a.serambi.x + 4) * T + 16, y: (a.serambi.y + 5) * T });
   for (var i = 0; i < a.lanterns.length; i++) {
     var L = a.lanterns[i];
     if (G.story.lit[L.id]) dests.push({ nama: L.nama, icon: L.id, x: L.x * T + 16, y: (L.y + 2) * T });

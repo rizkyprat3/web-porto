@@ -116,9 +116,18 @@
   <div id="memorial-wrap"><div id="memorial-list"></div></div>
 </div>
 
+<!-- popup achievement -->
+<div id="ach-pop">
+  <span id="ach-icon"></span>
+  <div><small>ACHIEVEMENT</small><b id="ach-nama"></b><em id="ach-desc"></em></div>
+</div>
+
 <!-- pilih mode -->
 <div id="screen-mode" class="screen">
   <h1>Pilih Jalanmu</h1>
+  <h2 class="mode-sub">Siapa kamu?</h2>
+  <div id="char-cards"></div>
+  <h2 class="mode-sub">Bagaimana kamu mati?</h2>
   <div id="mode-cards"></div>
   <div id="padam-confirm" style="display:none">
     <p class="warn">Mode PADAM menghapus save saat kau mati. Tidak ada undo. Ketik <b>PADAM</b>:</p>
@@ -133,7 +142,7 @@
     <label><input type="checkbox" id="mod-musim"> Musim Panjang</label>
     <label><input type="checkbox" id="mod-sendiri"> Sendirian (Serambi kosong)</label>
   </div>
-  <div id="seed-row"><label>Seed (kosong = acak) <input id="seed-input" type="text" inputmode="numeric"></label></div>
+  <div id="seed-row"><label>Seed (kosong = Benua Standar — Serambi selalu di tempat yang sama) <input id="seed-input" type="text" inputmode="numeric"></label></div>
   <div class="btn-col menu-btns">
     <button id="btn-start">Mulai</button>
     <button id="btn-mode-back">Kembali</button>
@@ -150,6 +159,7 @@
 <script src="js/npc.js"></script>
 <script src="js/quest.js"></script>
 <script src="js/modes.js"></script>
+<script src="js/achieve.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>

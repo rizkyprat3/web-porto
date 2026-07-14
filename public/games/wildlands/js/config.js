@@ -40,13 +40,16 @@ var CFG = {
   LANTERN_DIST: [400, 800, 1200, 1600, 1900],
 
   // musuh ---------------------------------------------------------
+  // virus/bakteri/spora = "Benih Kelam": wujud kecil sang pemakan ingatan
   ENEMY: {
-    slime:  { hp: 20,  dmg: 8,  speed: 42,  aggro: 90,  atkR: 30, cd: 1.2, xp: 0, gold: [0, 1] },
-    wolf:   { hp: 35,  dmg: 12, speed: 168, aggro: 420, atkR: 34, cd: 1.0, kulit: 1 },
-    bandit: { hp: 55,  dmg: 16, speed: 122, aggro: 260, atkR: 40, cd: 1.1, gold: [3, 8] },
-    archer: { hp: 35,  dmg: 11, speed: 112, aggro: 380, atkR: 300, cd: 1.8, gold: [2, 6], ranged: true, keep: 210 },
-    bear:   { hp: 170, dmg: 34, speed: 150, aggro: 200, atkR: 46, cd: 1.6, kulit: 4 },
-    shade:  { hp: 60,  dmg: 20, speed: 132, aggro: 320, atkR: 36, cd: 0.9, bara: true },
+    virus:   { hp: 12,  dmg: 6,  speed: 152, aggro: 280, atkR: 26, cd: 0.9 },
+    bakteri: { hp: 75,  dmg: 18, speed: 52,  aggro: 200, atkR: 36, cd: 1.4, makanan: 1 },
+    spora:   { hp: 25,  dmg: 12, speed: 14,  aggro: 120, atkR: 40, cd: 1.5, splits: true },
+    wolf:    { hp: 35,  dmg: 12, speed: 168, aggro: 420, atkR: 34, cd: 1.0, kulit: 1 },
+    bandit:  { hp: 55,  dmg: 16, speed: 122, aggro: 260, atkR: 40, cd: 1.1, gold: [3, 8] },
+    archer:  { hp: 35,  dmg: 11, speed: 112, aggro: 380, atkR: 300, cd: 1.8, gold: [2, 6], ranged: true, keep: 210 },
+    bear:    { hp: 170, dmg: 34, speed: 150, aggro: 200, atkR: 46, cd: 1.6, kulit: 4 },
+    shade:   { hp: 60,  dmg: 20, speed: 132, aggro: 320, atkR: 36, cd: 0.9, bara: true },
   },
   ENEMY_CAP: { rendah: 8, sedang: 14, tinggi: 22 },
   SPAWN_EVERY: 4.5,       // detik
@@ -89,6 +92,38 @@ var RECIPES = [
   { id: 'house',    nama: 'Perluasan Rumah', tier: 3, cost: { kayu: 40, batu: 30, emas: 50 }, desc: 'Kamar kedua, tungku, atap baru. Syarat menikah.' },
 ];
 
+// karakter yang bisa dipilih — playstyle berbeda, bukan sekadar kulit
+var CHARS = [
+  {
+    id: 'kesatria', nama: 'Kesatria', icon: '⚔',
+    desc: 'Sisa pengawal kapal. Mulai dengan pedang tua dan tubuh terlatih — tapi zirahnya berat dan perutnya minta jatah prajurit.',
+    hpBonus: 20, spd: 0.92, hungerMult: 1.15,
+    start: { has: { sword: true } },
+  },
+  {
+    id: 'rakyat', nama: 'Rakyat Biasa', icon: '🌾',
+    desc: 'Penumpang biasa. Tidak kuat, tidak cepat — tapi orang mudah percaya padanya, dan tangannya terbiasa bekerja. Kepercayaan penduduk tumbuh dua kali lebih cepat.',
+    hpBonus: 0, spd: 1.0, hungerMult: 1.0, trustBonus: 1,
+    start: { inv: { kayu: 8, makanan: 4 } },
+  },
+  {
+    id: 'barbar', nama: 'Barbarian', icon: '🪓',
+    desc: 'Tanpa baju, tanpa takut. Gada di tangan, kulit sebagai zirah — zirah buatan tidak akan pernah muat di punggung itu. Kuat dan cepat, tapi malam dingin adalah musuh pribadinya.',
+    hpBonus: 25, spd: 1.08, hungerMult: 1.1, tempMult: 1.35, noArmor: true, heavyMult: 3.0,
+    start: { has: { gada: true } },
+  },
+  {
+    id: 'pengembara', nama: 'Pengembara', icon: '🔥',
+    desc: 'Perempuan yang sudah lama berjalan sendirian. Napas panjang, kaki ringan, obor selalu menyala. Dan siapa yang dia cintai adalah urusannya sendiri.',
+    hpBonus: 0, spd: 1.0, hungerMult: 0.95, stamRegenMult: 1.3, dodgeCost: 18,
+    start: { has: { torch: true } },
+  },
+];
+function charDef() {
+  for (var i = 0; i < CHARS.length; i++) if (CHARS[i].id === G.charId) return CHARS[i];
+  return CHARS[1];
+}
+
 var RES_LIST = ['kayu', 'batu', 'besi', 'bintang', 'makanan', 'masak', 'kulit', 'kain', 'bara', 'emas'];
 var RES_NAMA = { kayu: 'Kayu', batu: 'Batu', besi: 'Besi', bintang: 'Bijih Bintang', makanan: 'Makanan', masak: 'Masakan', kulit: 'Kulit', kain: 'Kain', bara: 'Bara Pelita', emas: 'Emas' };
 
@@ -96,7 +131,7 @@ var RES_NAMA = { kayu: 'Kayu', batu: 'Batu', besi: 'Besi', bintang: 'Bijih Binta
 var G = {
   state: 'menu',          // menu | play | pause | dead | ending
   world: null, anchors: null,
-  mode: 'JEJAK', diff: 'Standar', mods: {},
+  mode: 'JEJAK', diff: 'Standar', mods: {}, charId: 'rakyat',
   time: { day: 1, t: 60 },   // mulai pagi hari pertama
   player: null, enemies: [], projectiles: [], fx: [], npcs: [],
   grave: null,            // {x, y, items}
@@ -105,7 +140,7 @@ var G = {
   beacons: [],            // api unggun terdaftar [{x,y}]
   fog: null,              // Uint8Array 512*512
   seen: {},               // landmark ditemukan
-  workedToday: {},        // npc -> day
+  workedToday: {}, talkedToday: {},   // npc -> day
   msg: [], camera: { x: 0, y: 0 },
 };
 

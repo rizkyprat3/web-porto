@@ -57,16 +57,20 @@ function findAnchors(world) {
   }
   if (!spawn) return null;
 
-  // 2. Serambi: 150–250 tile ke utara, cari lahan datar 9×9
+  // 2. Serambi: 150–280 tile ke utara. Seluruh tapak benteng (tembok ±14 +
+  //    cincin duri ±18) HARUS di darat — desa tidak boleh tenggelam di laut.
   var serambi = null;
-  for (var d = 150; d <= 280 && !serambi; d += 4) {
-    for (var ox = 0; ox <= 60 && !serambi; ox += 6) {
+  for (var d = 150; d <= 320 && !serambi; d += 4) {
+    for (var ox = 0; ox <= 90 && !serambi; ox += 6) {
       var xs = [spawn.x + ox, spawn.x - ox];
       for (var xi = 0; xi < 2; xi++) {
         var cx = xs[xi], cy = spawn.y - d, ok = true;
-        for (var yy = -5; yy <= 5 && ok; yy++) for (var xx = -5; xx <= 5 && ok; xx++) {
-          var bb = world.biomeAt(cx + xx, cy + yy);
-          if (bb.water || bb === BIOME.ROCK || bb === BIOME.SNOW) ok = false;
+        for (var yy = -19 ; yy <= 19 && ok; yy += 2) for (var xx = -19; xx <= 19 && ok; xx += 2) {
+          if (world.biomeAt(cx + xx, cy + yy).water) ok = false;   // tapak penuh bebas air
+        }
+        for (var y2 = -6; y2 <= 6 && ok; y2++) for (var x2 = -6; x2 <= 6 && ok; x2++) {
+          var bb = world.biomeAt(cx + x2, cy + y2);
+          if (bb.water || bb === BIOME.ROCK || bb === BIOME.SNOW) ok = false;   // interior datar
         }
         if (ok) { serambi = { x: cx, y: cy }; break; }
       }
@@ -112,21 +116,46 @@ function findAnchors(world) {
   return { spawn: spawn, serambi: serambi, lanterns: lanterns, reach: reach };
 }
 
-// bangun tata letak desa Serambi: menara di tengah, gubuk penduduk, ladang
+// Tata letak Serambi: desa berbenteng. Dua ratus tahun dikepung Benih Kelam —
+// tidak ada yang hidup di sini tanpa tembok, jebakan, dan jaga malam.
 function buildSerambi(world) {
   var s = world.anchors.serambi, L = world.serambiLayout;
   function put(dx, dy, name) { L[(s.x + dx) + ',' + (s.y + dy)] = name; }
-  // menara bara 2×2 di tengah
+  var R = 14;
+
+  // menara bara 2×2 di tengah + Titik Api (gerbang perjalanan api)
   put(0, 0, 'tower'); put(1, 0, 'towerPad'); put(0, 1, 'towerPad'); put(1, 1, 'towerPad');
+  put(4, 3, 'waypoint');
+
   var hutSpots = [[-8, -6], [8, -7], [-9, 4], [9, 5], [-3, -10], [4, -10], [-10, -1], [10, 0], [2, 9]];
   for (var i = 0; i < hutSpots.length; i++) put(hutSpots[i][0], hutSpots[i][1], 'hut');
   put(-5, 8, 'farm'); put(-4, 8, 'farm'); put(-3, 8, 'farm'); put(-5, 9, 'farm'); put(-4, 9, 'farm'); put(-3, 9, 'farm');
   put(6, 8, 'forge');
   put(-1, 12, 'dock');
-  // tembok gerbang selatan sebagian
-  for (var w = -14; w <= 14; w += 2) {
-    if (Math.abs(w) <= 2) continue;
-    if (tileRandom(w, 99, world.seed) < 0.6) { put(w, 14, 'wall'); put(w, -14, 'wall'); }
+
+  // tembok keliling PENUH — gerbang selatan 3 tile (jalan masuk pemain), utara 1 tile
+  for (var w = -R; w <= R; w++) {
+    if (Math.abs(w) > 1) put(w, R, 'wall');       // sisi selatan, gerbang di -1..1
+    if (w !== 0) put(w, -R, 'wall');              // sisi utara, gerbang di 0
+    put(-R, w, 'wall'); put(R, w, 'wall');        // sisi barat & timur
+  }
+  // menara jaga di empat sudut (api penjagaan — terlihat dari jauh)
+  put(-R, -R, 'watchtower'); put(R, -R, 'watchtower');
+  put(-R, R, 'watchtower'); put(R, R, 'watchtower');
+  // obor gerbang selatan
+  put(-2, R, 'gatePost'); put(2, R, 'gatePost');
+
+  // jebakan duri di luar tembok (radius 16–18), koridor gerbang dibiarkan bersih
+  for (var ring = 16; ring <= 18; ring++) {
+    for (var a = -ring; a <= ring; a++) {
+      var edges = [[a, -ring], [a, ring], [-ring, a], [ring, a]];
+      for (var e = 0; e < edges.length; e++) {
+        var dx = edges[e][0], dy = edges[e][1];
+        if (Math.abs(dx) <= 2 && dy > 0) continue;          // koridor gerbang selatan
+        if (dx === 0 && dy < 0) continue;                    // koridor gerbang utara
+        if (tileRandom(s.x + dx, s.y + dy, 321) < 0.4) put(dx, dy, 'spikes');
+      }
+    }
   }
 }
 

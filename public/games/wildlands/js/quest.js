@@ -52,8 +52,11 @@ function tryLightLantern(L) {
   SFX.lantern();
   uiMemory(L.nama, LANTERN_MEMORY[L.id]);
   toast(L.nama + ' menyala. Titik pindah baru terbuka.');
+  unlockAch('pelita_1');
+  if (litCount() >= 5) unlockAch('pelita_5');
   if (L.id === 'abu') {
     G.story.hulanNamed = true;
+    unlockAch('hulan');
     G.rel['Hulan'] = G.rel['Hulan'] || 0;
   }
   var nxt = nextUnlitLantern();
@@ -94,6 +97,7 @@ function chooseEnding(key) {
   var e = ENDINGS[key];
   if (e.syarat && !e.syarat()) { toast(e.syaratTeks); return; }
   G.story.endingSeen = key;
+  unlockAch('tamat');
   var spouse = G.story.married;
   var epilog = e.teks;
   if (spouse) {

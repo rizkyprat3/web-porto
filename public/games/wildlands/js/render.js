@@ -85,6 +85,7 @@ function render(t) {
   // entity
   for (var e = 0; e < G.enemies.length; e++) items.push({ y: G.enemies[e].y, enemy: G.enemies[e] });
   for (var n = 0; n < G.npcs.length; n++) items.push({ y: G.npcs[n].y, npc: G.npcs[n] });
+  if (G.guards) for (var gu = 0; gu < G.guards.length; gu++) items.push({ y: G.guards[gu].y, guardE: G.guards[gu] });
   items.push({ y: p.y, player: true });
 
   items.sort(function (A, B) { return A.y - B.y; });
@@ -97,6 +98,7 @@ function render(t) {
     else if (it.grave) drawGrave(g, it.x - camX, it.ty - camY, t);
     else if (it.enemy) drawEnemy(g, it.enemy, camX, camY, t);
     else if (it.npc) drawNpc(g, it.npc, camX, camY);
+    else if (it.guardE) drawGuard(g, it.guardE, camX, camY, t);
     else if (it.player) drawPlayer(g, p, camX, camY, t);
   }
 
@@ -115,36 +117,117 @@ function render(t) {
 }
 
 // ---- pemain & entity ----
+// ---- figur manusia bersama: kepala, rambut, badan, lengan, kaki berayun ----
+// opts: {skin, hair, hairStyle:'short'|'long'|'band'|'helmet'|'none', top (null = tanpa baju),
+//        pants, dress, walk, flash, scale, scar}
+function drawHuman(g, x, y, o) {
+  var s = o.scale || 1;
+  var step = Math.sin(o.walk || 0) * 3 * s;      // ayunan kaki
+  var arm = -Math.sin(o.walk || 0) * 2.5 * s;    // lengan berlawanan arah
+
+  g.fillStyle = 'rgba(0,0,0,0.25)';
+  g.beginPath(); g.ellipse(x, y + 11 * s, 8 * s, 3.5 * s, 0, 0, Math.PI * 2); g.fill();
+
+  // kaki
+  g.fillStyle = o.pants || '#4a3a2c';
+  g.fillRect(x - 4.5 * s, y + 3 * s, 3.5 * s, 8 * s + step);
+  g.fillRect(x + 1 * s, y + 3 * s, 3.5 * s, 8 * s - step);
+
+  // badan (rok kalau dress)
+  var topCol = o.flash ? '#ff6b5b' : (o.top || o.skin);
+  if (o.dress) {
+    g.fillStyle = topCol;
+    g.beginPath();
+    g.moveTo(x - 5 * s, y - 8 * s); g.lineTo(x + 5 * s, y - 8 * s);
+    g.lineTo(x + 7 * s, y + 6 * s); g.lineTo(x - 7 * s, y + 6 * s);
+    g.closePath(); g.fill();
+  } else {
+    g.fillStyle = topCol;
+    g.fillRect(x - 5.5 * s, y - 8 * s, 11 * s, 12 * s);
+    g.fillRect(x - 6.5 * s, y - 8 * s, 13 * s, 4 * s);   // bahu
+  }
+  if (!o.top && o.scar) {   // barbarian: dada terbuka + bekas luka
+    g.strokeStyle = 'rgba(140,60,40,0.8)'; g.lineWidth = 1.5 * s;
+    g.beginPath(); g.moveTo(x - 3 * s, y - 6 * s); g.lineTo(x + 3 * s, y + 1 * s); g.stroke();
+  }
+
+  // lengan
+  g.fillStyle = o.sleeve || o.skin;
+  g.fillRect(x - 8 * s, y - 7 * s + arm, 2.8 * s, 8.5 * s);
+  g.fillRect(x + 5.2 * s, y - 7 * s - arm, 2.8 * s, 8.5 * s);
+
+  // kepala
+  g.fillStyle = o.flash ? '#ff8f7f' : o.skin;
+  g.beginPath(); g.arc(x, y - 13 * s, 4.8 * s, 0, Math.PI * 2); g.fill();
+
+  // rambut / helm
+  if (o.hairStyle === 'helmet') {
+    g.fillStyle = o.hair;
+    g.beginPath(); g.arc(x, y - 14 * s, 5 * s, Math.PI, 0); g.fill();
+    g.fillRect(x - 5 * s, y - 14.5 * s, 10 * s, 2.5 * s);
+    g.fillStyle = '#c05a4a';
+    g.fillRect(x - 1 * s, y - 20 * s, 2 * s, 4 * s);       // jambul
+  } else if (o.hairStyle === 'long') {
+    g.fillStyle = o.hair;
+    g.beginPath(); g.arc(x, y - 14.5 * s, 5 * s, Math.PI * 0.95, Math.PI * 0.05); g.fill();
+    g.fillRect(x - 5.5 * s, y - 14 * s, 2.6 * s, 11 * s);  // juntai kiri
+    g.fillRect(x + 2.9 * s, y - 14 * s, 2.6 * s, 9 * s);   // juntai kanan
+  } else if (o.hairStyle === 'band') {
+    g.fillStyle = o.hair;
+    g.beginPath(); g.arc(x, y - 14.5 * s, 4.6 * s, Math.PI, 0); g.fill();
+    g.fillStyle = '#8a3a2a';
+    g.fillRect(x - 5 * s, y - 14.5 * s, 10 * s, 1.8 * s);  // ikat kepala
+  } else if (o.hairStyle !== 'none') {
+    g.fillStyle = o.hair;
+    g.beginPath(); g.arc(x, y - 14.5 * s, 4.6 * s, Math.PI, 0); g.fill();
+  }
+}
+
 function drawPlayer(g, p, camX, camY, t) {
   var x = Math.round(p.x - camX), y = Math.round(p.y - camY);
-  g.fillStyle = 'rgba(0,0,0,0.25)';
-  g.beginPath(); g.ellipse(x, y + 10, 9, 4, 0, 0, Math.PI * 2); g.fill();
+  var ch = G.charId;
   var blink = p.iframe > 0 && Math.floor(t / 60) % 2 === 0;
   if (!blink) {
-    // tubuh
-    g.fillStyle = p.flash > 0 ? '#ff6b5b' : (p.has.coat ? '#7a6248' : '#c8b89a');
-    g.beginPath(); g.arc(x, y - 4, 9, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#e8d8b8';
-    g.beginPath(); g.arc(x, y - 12, 6, 0, Math.PI * 2); g.fill();
-    if (p.has.plate) { g.strokeStyle = '#9aa0ab'; g.lineWidth = 2; g.beginPath(); g.arc(x, y - 4, 9, 0, Math.PI); g.stroke(); }
+    var idle = Math.sin(t * 0.003) * 0.15;   // napas halus saat diam
+    var opts =
+      ch === 'kesatria' ? { skin: '#e8c8a8', hair: '#7d8590', hairStyle: 'helmet', top: '#9aa0ab', sleeve: '#7d8590', pants: '#4a4e58' } :
+      ch === 'barbar' ? { skin: '#d8a06a', hair: '#3a2a1a', hairStyle: 'band', top: null, scar: true, pants: '#5d4630', scale: 1.15 } :
+      ch === 'pengembara' ? { skin: '#c89878', hair: '#4a2f1a', hairStyle: 'long', top: '#8a5a6a', dress: true, pants: '#3a3040' } :
+      { skin: '#e8c8a8', hair: '#5d4630', hairStyle: 'short', top: '#c8b89a', pants: '#4a3a2c' };
+    if (p.has.coat) { opts.top = '#7a6248'; opts.sleeve = '#7a6248'; opts.dress = false; }
+    opts.walk = (p.walkT || 0) + idle;
+    opts.flash = p.flash > 0;
+    drawHuman(g, x, y, opts);
+    if (p.has.plate) {
+      g.strokeStyle = '#9aa0ab'; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(x - 6, y - 4); g.lineTo(x + 6, y - 4); g.stroke();
+    }
     // senjata mengayun
     if (p.swing > 0) {
       var prog = 1 - p.swing / 0.22;
       var ang = p.face - 0.9 + prog * 1.8;
       g.save(); g.translate(x, y - 6); g.rotate(ang);
-      g.fillStyle = p.has.sword2 ? '#ffb054' : p.has.sword ? '#cfd6de' : '#8a6a45';
-      g.fillRect(8, -2, p.swingHeavy ? 26 : 20, 3);
+      if (p.has.gada && !p.has.sword && !p.has.sword2) {
+        g.fillStyle = '#6a5138'; g.fillRect(6, -1.5, 18, 3);
+        g.fillStyle = '#5d5a55';
+        g.beginPath(); g.arc(26, 0, 6, 0, Math.PI * 2); g.fill();
+        g.fillStyle = '#3f3d3a';
+        for (var sp = 0; sp < 4; sp++) { var sa = sp * 1.57; g.fillRect(26 + Math.cos(sa) * 6 - 1, Math.sin(sa) * 6 - 1, 2.5, 2.5); }
+      } else {
+        g.fillStyle = p.has.sword2 ? '#ffb054' : p.has.sword ? '#cfd6de' : '#8a6a45';
+        g.fillRect(8, -2, p.swingHeavy ? 26 : 20, 3);
+      }
       g.restore();
     }
     // charge indicator
     if (p.charging && p.chargeT >= CFG.HEAVY_CHARGE) {
       g.strokeStyle = 'rgba(255,180,80,0.8)'; g.lineWidth = 2;
-      g.beginPath(); g.arc(x, y - 4, 14, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.arc(x, y - 4, 15, 0, Math.PI * 2); g.stroke();
     }
   }
 }
 
-var ENEMY_COLOR = { slime: '#6fbf5f', wolf: '#8a8f9a', bandit: '#a05a3a', archer: '#7a5a8a', bear: '#5d4630', shade: '#2a2138' };
+var ENEMY_COLOR = { virus: '#7dd14f', bakteri: '#4fa66f', spora: '#b06fd1', wolf: '#8a8f9a', bandit: '#a05a3a', archer: '#7a5a8a', bear: '#5d4630', shade: '#2a2138' };
 
 function drawEnemy(g, e, camX, camY, t) {
   var x = Math.round(e.x - camX), y = Math.round(e.y - camY);
@@ -152,9 +235,35 @@ function drawEnemy(g, e, camX, camY, t) {
   g.beginPath(); g.ellipse(x, y + 8, 9, 4, 0, 0, Math.PI * 2); g.fill();
   var col = e.flash > 0 ? '#ffffff' : ENEMY_COLOR[e.type];
   g.fillStyle = col;
-  if (e.type === 'slime') {
-    var sq = 1 + Math.sin(t * 0.008) * 0.15;
-    g.beginPath(); g.ellipse(x, y, 10 * sq, 8 / sq, 0, 0, Math.PI * 2); g.fill();
+  if (e.type === 'virus') {
+    // bola berduri kecil, bergetar gelisah
+    var jit = Math.sin(t * 0.03 + e.x) * 1.2;
+    g.beginPath(); g.arc(x + jit, y - 2, 6, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = col; g.lineWidth = 1.6;
+    for (var i = 0; i < 6; i++) {
+      var a = i * 1.047 + t * 0.002;
+      g.beginPath(); g.moveTo(x + jit + Math.cos(a) * 6, y - 2 + Math.sin(a) * 6);
+      g.lineTo(x + jit + Math.cos(a) * 10, y - 2 + Math.sin(a) * 10); g.stroke();
+    }
+  } else if (e.type === 'bakteri') {
+    // kapsul dengan flagela bergoyang
+    g.save(); g.translate(x, y - 2); g.rotate(Math.atan2(G.player.y - e.y, G.player.x - e.x));
+    g.beginPath(); g.ellipse(0, 0, 13, 8, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.25)';
+    g.beginPath(); g.ellipse(-3, -2, 6, 3, 0, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = col; g.lineWidth = 1.5;
+    var wig = Math.sin(t * 0.015) * 4;
+    g.beginPath(); g.moveTo(-13, 0); g.quadraticCurveTo(-20, wig, -26, -wig); g.stroke();
+    g.restore();
+  } else if (e.type === 'spora') {
+    // bola ungu berdenyut — makin cepat denyutnya makin dekat pecah
+    var pulse = 1 + Math.sin(t * (e.hp < 10 ? 0.03 : 0.006)) * 0.18;
+    g.beginPath(); g.arc(x, y - 2, 9 * pulse, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#7a3f9a';
+    for (var d = 0; d < 5; d++) {
+      var da = d * 1.256 + 0.5;
+      g.beginPath(); g.arc(x + Math.cos(da) * 5 * pulse, y - 2 + Math.sin(da) * 5 * pulse, 1.8, 0, Math.PI * 2); g.fill();
+    }
   } else if (e.type === 'shade') {
     g.globalAlpha = 0.75 + Math.sin(t * 0.005) * 0.15;
     g.beginPath(); g.arc(x, y - 4, 10, 0, Math.PI * 2); g.fill();
@@ -180,14 +289,27 @@ function drawEnemy(g, e, camX, camY, t) {
   }
 }
 
+// warna rambut & kulit per penduduk — semuanya manusia, semuanya berbeda
+var NPC_LOOK = {
+  Sira:  { skin: '#d8b090', hair: '#3a3a3f', hairStyle: 'short' },
+  Neyra: { skin: '#c89878', hair: '#2a2530', hairStyle: 'short' },
+  Ilma:  { skin: '#e0c0a0', hair: '#6a5a4a', hairStyle: 'long' },
+  Kanti: { skin: '#d8a878', hair: '#4a2f1a', hairStyle: 'long' },
+  Rua:   { skin: '#c8a888', hair: '#5d4630', hairStyle: 'short' },
+  Wenda: { skin: '#e8d0b0', hair: '#8a5a3a', hairStyle: 'long' },
+  Marsa: { skin: '#c08858', hair: '#1d1a15', hairStyle: 'band' },
+  Ayung: { skin: '#b8875f', hair: '#2a2015', hairStyle: 'long' },
+  Hulan: { skin: '#d0d0d8', hair: '#8a8a95', hairStyle: 'long' },
+};
+
 function drawNpc(g, n, camX, camY) {
   var x = Math.round(n.x - camX), y = Math.round(n.y - camY);
-  g.fillStyle = 'rgba(0,0,0,0.22)';
-  g.beginPath(); g.ellipse(x, y + 9, 8, 4, 0, 0, Math.PI * 2); g.fill();
-  g.fillStyle = n.def.warna;
-  g.beginPath(); g.arc(x, y - 3, 8, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#e8d8b8';
-  g.beginPath(); g.arc(x, y - 11, 5.5, 0, Math.PI * 2); g.fill();
+  var look = NPC_LOOK[n.nama] || { skin: '#e8d8b8', hair: '#4a3a2a', hairStyle: 'long' };
+  drawHuman(g, x, y, {
+    skin: look.skin, hair: look.hair, hairStyle: look.hairStyle,
+    top: n.def.warna, dress: true, pants: '#3a3040',
+    walk: n.walkT || 0, scale: 0.95,
+  });
   // nameplate — Hulan: '—'
   var nm = npcDisplayName(n);
   g.font = '11px monospace'; g.textAlign = 'center';
@@ -196,6 +318,21 @@ function drawNpc(g, n, camX, camY) {
   g.fillStyle = n.nama === 'Hulan' && !G.story.hulanNamed ? '#9a9aa5' : '#ffe9c9';
   g.fillText(nm, x, y - 20);
   if (G.story.married === n.nama) { g.fillStyle = '#ff8fa3'; g.fillText('♥', x + g.measureText(nm).width / 2 + 8, y - 20); }
+}
+
+// milisi Serambi: manusia berseragam Sira, helm, tombak, patroli tembok
+function drawGuard(g, gd, camX, camY, t) {
+  var x = Math.round(gd.x - camX), y = Math.round(gd.y - camY);
+  drawHuman(g, x, y, {
+    skin: '#d8b090', hair: '#5d6570', hairStyle: 'helmet',
+    top: '#8a4535', sleeve: '#6d3628', pants: '#4a3a2c',
+    walk: gd.walkT || 0, scale: 0.95,
+  });
+  // tombak
+  g.strokeStyle = '#6a5138'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(x + 8, y + 8); g.lineTo(x + 10, y - 24); g.stroke();
+  g.fillStyle = '#9aa0ab';
+  g.beginPath(); g.moveTo(x + 10, y - 30); g.lineTo(x + 13, y - 23); g.lineTo(x + 7, y - 23); g.closePath(); g.fill();
 }
 
 // ---- anchor besar ----

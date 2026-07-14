@@ -6,9 +6,21 @@ Kamu terdampar di benua yang dijaga sebuah ordo mercusuar. Sesuatu bernama **Kel
 
 **Main:** buka `index.html` di browser. Itu saja.
 
+## Yang baru di versi ini
+
+- **4 karakter**: Kesatria (pedang + HP), Rakyat Biasa (kepercayaan 2×), Barbarian (gada, tanpa zirah, takut dingin), Pengembara (stamina + obor). Playstyle beda nyata.
+- **Benih Kelam**: virus (swarm cepat), bakteri (tank ber-flagela), spora (PECAH jadi 2 virus saat mati — jangan bunuh dari dekat).
+- **Serambi berbenteng**: tembok keliling penuh, menara jaga berapi, jebakan duri, 4 milisi patroli.
+- **Pembuka dengan pemandu**: Rua menemukanmu di bangkai kapal dan mengantarmu ke desa. Ikuti dia.
+- **Titik Api**: gerbang teleport berlabel di desa (dekat menara). Pelita yang menyala & suar buatanmu menambah jaringannya.
+- **Interaksi NPC hybrid**: naikkan keakraban lewat KERJA BARENG (minigame timing) atau MENGOBROL (pilih jawaban yang sesuai wataknya) — masing-masing sekali per hari.
+- **16 achievement** dengan popup + chime dua-nada yang di-synthesize (tanpa file audio).
+
 ---
 
 ## Petunjuk Bermain
+
+> **Referensi lengkap semua perintah** — setiap tombol, setiap interaksi `E`, menu NPC, roda teleport, dan layar mode — ada di **[`CONTROLS.md`](CONTROLS.md)**. Tabel di bawah hanya ringkasannya.
 
 ### Kontrol
 
@@ -29,7 +41,7 @@ Kamu terdampar di benua yang dijaga sebuah ordo mercusuar. Sesuatu bernama **Kel
 
 ### Cara bertahan hidup — jam pertama
 
-1. **Kapalmu karam di pantai selatan.** Menara dengan api oranye terlihat di utara — itu **Serambi**, satu-satunya tempat aman. Jalan ke sana (± 1 menit).
+1. **Kapalmu karam di pantai selatan.** Seseorang berdiri di antara puing — itu **Rua**. Sapa dia (`E`) dan **ikuti dia** ke Serambi, desa berbenteng satu-satunya tempat aman. Jangan tertinggal jauh; dia menunggumu.
 2. **Pukul pohon** (klik ke arahnya) untuk kayu — pohon kecil bisa tanpa alat, lalu buat **Kapak Batu** dan **Beliung Batu** (`C`).
 3. **Buat Obor sebelum malam.** Malam itu gelap, dingin, dan serigala berburu dalam kawanan. Malam pertama tanpa obor = pelajaran yang menyakitkan.
 4. **Semak beri** (`E`) untuk makanan. Masak di dekat api (`C` → Makanan Matang) supaya pulih jauh lebih banyak.
@@ -86,7 +98,8 @@ wildlands/
     npc.js        ← 9 penduduk: dialog kontekstual, relasi, pernikahan
     quest.js      ← lima pelita, ingatan, tiga ending
     modes.js      ← mode kematian, kesulitan, Batu Peringatan
-    audio.js      ← SFX WebAudio (oscillator + noise burst)
+    achieve.js    ← 16 achievement + popup + penyimpanan lintas-dunia
+    audio.js      ← SFX WebAudio (oscillator + noise burst + chime bel)
     render.js     ← SEMUA pemanggilan Canvas: terrain, y-sort, lighting, peta
     ui.js         ← HUD, panel, layar mode, roda teleport
     save.js       ← serialisasi localStorage + versioning
